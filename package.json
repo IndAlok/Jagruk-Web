@@ -1,0 +1,28 @@
+{
+  "name": "jagruk-web",
+  "version": "1.0.0",
+  "description": "Disaster Preparedness and Response Education System for Schools and Colleges",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && nodemon index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "install-server": "cd server && npm install",
+    "postinstall": "npm run install-client && npm run install-server"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IndAlok/Jagruk-Web.git"
+  },
+  "keywords": ["disaster-management", "education", "react", "firebase", "smart-india-hackathon"],
+  "author": "IndAlok",
+  "license": "MIT"
+}
