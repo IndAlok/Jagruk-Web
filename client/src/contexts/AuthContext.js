@@ -136,7 +136,10 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setCurrentUser(user);
 
-      toast.success(`Welcome back, ${user.name}!`);
+      // Only show toast if it's not coming from server message
+      if (!response.data.message) {
+        toast.success(`Welcome back, ${user.name}!`);
+      }
       return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
@@ -160,7 +163,12 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setCurrentUser(user);
 
-      toast.success(message || `Welcome to JAGRUK, ${user.name}!`);
+      // Only show toast if server didn't provide a message
+      if (!message) {
+        toast.success(`Welcome to JAGRUK, ${user.name}!`);
+      } else {
+        toast.success(message);
+      }
       return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -197,7 +205,12 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setCurrentUser(user);
 
-      toast.success(message || `Welcome, ${user.name}!`);
+      // Only show toast if server didn't provide a message
+      if (!message) {
+        toast.success(`Welcome, ${user.name}!`);
+      } else {
+        toast.success(message);
+      }
       return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.message || 'Google login failed';

@@ -20,6 +20,7 @@ const alertRoutes = require('./routes/alerts');
 const moduleRoutes = require('./routes/modules');
 const attendanceRoutes = require('./routes/attendance');
 const dashboardRoutes = require('./routes/dashboard');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const server = http.createServer(app);
@@ -83,6 +84,7 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/modules', moduleRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
