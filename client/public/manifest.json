@@ -1,0 +1,17 @@
+{
+  "short_name": "JAGRUK",
+  "name": "JAGRUK - Disaster Management Education System",
+  "description": "Comprehensive disaster preparedness and response education platform for schools and colleges",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2196f3",
+  "background_color": "#ffffff",
+  "categories": ["education", "emergency", "safety"]
+}

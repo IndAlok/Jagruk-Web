@@ -1,0 +1,62 @@
+type User @table {
+  email: String!
+  displayName: String!
+  userRole: String! # ADMIN, TEACHER, STUDENT
+  createdAt: Timestamp!
+  photoUrl: String
+  phoneNumber: String
+}
+
+type EmergencyPlan @table {
+  title: String!
+  disasterType: String! # FIRE, EARTHQUAKE, FLOOD, TORNADO, ACTIVE_SHOOTER, OTHER
+  status: String! # DRAFT, APPROVED, ARCHIVED
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  description: String
+  lastReviewedAt: Timestamp
+  creator: User
+}
+
+type Resource @table {
+  title: String!
+  resourceType: String! # DOCUMENT, VIDEO, LINK, OTHER
+  url: String!
+  createdAt: Timestamp!
+  description: String
+  tags: [String]
+  uploader: User
+  emergencyPlan: EmergencyPlan
+}
+
+type TrainingModule @table {
+  title: String!
+  description: String!
+  targetAudience: String! # ALL, STAFF, STUDENTS
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  completionTimeMinutes: Int
+  creator: User
+  associatedEmergencyPlan: EmergencyPlan
+}
+
+type Drill @table {
+  drillDate: Date!
+  drillType: String! # FIRE_DRILL, LOCKDOWN_DRILL, EVACUATION_DRILL
+  createdAt: Timestamp!
+  observations: String
+  participantsCount: Int
+  evacuationTimeSeconds: Int
+  organizer: User
+  emergencyPlan: EmergencyPlan
+}
+
+type EmergencyContact @table {
+  contactName: String!
+  relationship: String!
+  phoneNumber: String!
+  createdAt: Timestamp!
+  alternatePhoneNumber: String
+  email: String
+  associatedPerson: User
+}

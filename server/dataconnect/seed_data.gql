@@ -1,0 +1,44 @@
+mutation SeedData @auth(level: USER) {
+  user_upsertMany(
+    data: [
+      {
+        id: "550e8400-e29b-41d4-a716-446655440000"
+        createdAt: "2024-04-26T12:00:00Z"
+        displayName: "Bob User"
+        email: "bob@example.com"
+        userRole: "admin"
+      }
+      {
+        id: "661f9511-f3ac-52e5-b827-557766551111"
+        createdAt: "2024-04-26T13:00:00Z"
+        displayName: "Alice User"
+        email: "alice@example.com"
+        userRole: "member"
+      }
+    ]
+  )
+  emergencyPlan_upsertMany(
+    data: [
+      {
+        id: "772a0622-04bb-63f6-c938-668877662222"
+        creatorId: "550e8400-e29b-41d4-a716-446655440000"
+        createdAt: "2024-04-26T14:00:00Z"
+        description: "Fire evacuation plan"
+        disasterType: "Fire"
+        status: "active"
+        title: "Building Fire Plan"
+        updatedAt: "2024-04-26T14:00:00Z"
+      }
+      {
+        id: "883b1733-15cc-7407-da49-779988773333"
+        creatorId: "661f9511-f3ac-52e5-b827-557766551111"
+        createdAt: "2024-04-26T15:00:00Z"
+        description: "Earthquake preparedness plan"
+        disasterType: "Earthquake"
+        status: "draft"
+        title: "Office Earthquake Plan"
+        updatedAt: "2024-04-26T15:00:00Z"
+      }
+    ]
+  )
+}

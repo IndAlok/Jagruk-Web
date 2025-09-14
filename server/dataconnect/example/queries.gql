@@ -1,0 +1,38 @@
+mutation AddNewEmergencyContact @auth(level: USER) {
+  emergencyContact_insert(
+    data: {
+      contactName: "Jane Doe"
+      phoneNumber: "555-123-4567"
+      relationship: "Friend"
+      associatedPersonId_expr: "auth.uid"
+    }
+  )
+}
+
+query GetMyEmergencyContacts @auth(level: USER) {
+  emergencyContacts(where: {associatedPersonId_expr: "auth.uid"}) {
+    id
+    contactName
+    phoneNumber
+    relationship
+  }
+}
+
+mutation UpdateEmergencyPlan($id: UUID!, $description: String) @auth(level: USER) {
+  emergencyPlan_update(
+    key: {id: $id}
+    data: {
+      description: $description
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+query ListEmergencyPlans @auth(level: USER) {
+  emergencyPlans {
+    id
+    title
+    description
+    disasterType
+  }
+}

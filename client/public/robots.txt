@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow: /admin
+Allow: /
+
+# SEO optimization for JAGRUK
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Allow all disaster preparedness content
+Allow: /student
+Allow: /login
+Allow: /register
