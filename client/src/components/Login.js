@@ -5,10 +5,6 @@ import {
   TextField,
   Button,
   Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Tabs,
   Tab,
   Divider,
@@ -17,29 +13,33 @@ import {
   Alert,
   CircularProgress,
   Link,
-  Fade,
-  Slide,
-  Zoom,
-  useTheme
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip,
+  Backdrop
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   School,
-  PersonAdd,
   Google,
   Security,
   Warning,
-  LoginOutlined,
   PersonOutline,
   Email,
   Lock,
   ArrowForward,
-  Waves
+  Brightness4,
+  Brightness7,
+  KeyOutlined
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -51,8 +51,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, forgotPassword } = useAuth();
+  const { darkMode, toggleTheme } = useCustomTheme();
   const navigate = useNavigate();
 
   const handleTabChange = (event, newValue) => {
@@ -75,28 +79,64 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    const result = await login(loginData.email, loginData.password, loginData.role);
-    
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error);
+    try {
+      const result = await login(loginData.email, loginData.password, loginData.role);
+      
+      if (result.success) {
+        // Don't show additional toast, let AuthContext handle it
+        navigate('/dashboard');
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
 
-    const result = await loginWithGoogle();
-    
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error);
+    try {
+      const result = await loginWithGoogle();
+      
+      if (result.success) {
+        // Don't show additional toast, let AuthContext handle it
+        navigate('/dashboard');
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Google login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordEmail) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    
+    try {
+      const result = await forgotPassword(forgotPasswordEmail);
+      if (result.success) {
+        toast.success('Password reset link sent to your email!');
+        setForgotPasswordOpen(false);
+        setForgotPasswordEmail('');
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Failed to send reset email. Please try again.');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -184,13 +224,57 @@ const Login = () => {
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        background: darkMode 
+          ? 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)'
+          : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
       }}
     >
+      {/* Dark Mode Toggle */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 1000
+        }}
+      >
+        <Tooltip title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
+          <IconButton
+            onClick={toggleTheme}
+            sx={{
+              bgcolor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(10px)',
+              '&:hover': {
+                bgcolor: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)',
+                transform: 'scale(1.1)'
+              },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {darkMode ? <Brightness7 sx={{ color: 'white' }} /> : <Brightness4 sx={{ color: 'white' }} />}
+          </IconButton>
+        </Tooltip>
+      </Box>
       {/* Animated Background */}
       <motion.div
-        variants={backgroundVariants}
-        animate="animate"
+        animate={{
+          background: darkMode ? [
+            "linear-gradient(45deg, #0f0f23 30%, #1a1a2e 90%)",
+            "linear-gradient(45deg, #1a1a2e 30%, #16213e 90%)",
+            "linear-gradient(45deg, #16213e 30%, #0f0f23 90%)"
+          ] : [
+            "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
+            "linear-gradient(45deg, #f093fb 30%, #f5576c 90%)",
+            "linear-gradient(45deg, #4facfe 30%, #00f2fe 90%)",
+            "linear-gradient(45deg, #667eea 30%, #764ba2 90%)"
+          ]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "linear"
+        }}
         style={{
           position: 'absolute',
           top: 0,
@@ -261,11 +345,16 @@ const Login = () => {
             width: { xs: '90vw', sm: 450, md: 500 },
             p: 4,
             borderRadius: 4,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: darkMode 
+              ? 'rgba(26, 26, 46, 0.95)' 
+              : 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            border: darkMode 
+              ? '1px solid rgba(255, 255, 255, 0.1)' 
+              : '1px solid rgba(255, 255, 255, 0.2)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            color: darkMode ? 'white' : 'inherit'
           }}
         >
           {/* Header with Logo */}
@@ -288,7 +377,9 @@ const Login = () => {
                 variant="h3" 
                 sx={{ 
                   fontWeight: 700,
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                  background: darkMode 
+                    ? 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)'
+                    : 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
@@ -297,7 +388,7 @@ const Login = () => {
               >
                 JAGRUK
               </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
+              <Typography variant="subtitle1" sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary' }}>
                 Disaster Management & Safety System
               </Typography>
             </Box>
@@ -408,11 +499,30 @@ const Login = () => {
                 onChange={handleInputChange}
                 variant="outlined"
                 required
-                sx={{ mb: 2 }}
+                sx={{ 
+                  mb: 2,
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.23)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.87)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#667eea',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    color: darkMode ? 'white' : 'inherit',
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email color="action" />
+                      <Email sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'action.active' }} />
                     </InputAdornment>
                   )
                 }}
@@ -427,10 +537,29 @@ const Login = () => {
                 onChange={handleInputChange}
                 variant="outlined"
                 required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.23)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.87)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#667eea',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    color: darkMode ? 'white' : 'inherit',
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock color="action" />
+                      <Lock sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'action.active' }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -438,6 +567,7 @@ const Login = () => {
                       <IconButton
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
+                        sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'inherit' }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -521,7 +651,7 @@ const Login = () => {
           {/* Footer Links */}
           <motion.div variants={itemVariants}>
             <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary' }}>
                 Don't have an account?{' '}
                 <Link 
                   component={RouterLink}
@@ -538,12 +668,13 @@ const Login = () => {
                   Sign Up
                 </Link>
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography variant="body2" sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary', mt: 1 }}>
                 <Link 
-                  href="#"
+                  onClick={() => setForgotPasswordOpen(true)}
                   sx={{ 
-                    color: 'text.secondary',
+                    color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary',
                     textDecoration: 'none',
+                    cursor: 'pointer',
                     '&:hover': {
                       textDecoration: 'underline'
                     }
@@ -554,6 +685,90 @@ const Login = () => {
               </Typography>
             </Box>
           </motion.div>
+
+          {/* Forgot Password Dialog */}
+          <Dialog 
+            open={forgotPasswordOpen} 
+            onClose={() => setForgotPasswordOpen(false)}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+              sx: {
+                bgcolor: darkMode ? '#1a1a2e' : 'white',
+                color: darkMode ? 'white' : 'inherit'
+              }
+            }}
+          >
+            <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
+              <KeyOutlined sx={{ fontSize: 40, color: '#667eea', mb: 1 }} />
+              <Typography variant="h5" component="div">
+                Reset Password
+              </Typography>
+              <Typography variant="body2" sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary', mt: 1 }}>
+                Enter your email address and we'll send you a link to reset your password.
+              </Typography>
+            </DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="outlined"
+                value={forgotPasswordEmail}
+                onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                sx={{
+                  mt: 2,
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.23)',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.87)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#667eea',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+                  },
+                  '& .MuiOutlinedInput-input': {
+                    color: darkMode ? 'white' : 'inherit',
+                  }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'action.active' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 3 }}>
+              <Button 
+                onClick={() => setForgotPasswordOpen(false)}
+                sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'text.secondary' }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleForgotPassword}
+                variant="contained"
+                disabled={forgotPasswordLoading || !forgotPasswordEmail}
+                sx={{
+                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
+                  }
+                }}
+              >
+                {forgotPasswordLoading ? <CircularProgress size={20} color="inherit" /> : 'Send Reset Link'}
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           {/* Decorative Elements */}
           <motion.div

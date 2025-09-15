@@ -129,21 +129,22 @@ export const AuthProvider = ({ children }) => {
         role
       });
 
-      const { token: newToken, user } = response.data;
+      const { token: newToken, user, success, message } = response.data;
       
       // Store token
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setCurrentUser(user);
 
-      // Only show toast if it's not coming from server message
-      if (!response.data.message) {
-        toast.success(`Welcome back, ${user.name}!`);
+      // Show success message only if provided by server
+      if (message && success) {
+        toast.success(message);
       }
+      
       return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
-      toast.error(message);
+      // Don't show toast here, let the component handle it
       return { success: false, error: message };
     } finally {
       setLoading(false);
@@ -156,23 +157,22 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await axios.post('/api/auth/register', userData);
 
-      const { token: newToken, user, message } = response.data;
+      const { token: newToken, user, message, success } = response.data;
       
       // Store token
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setCurrentUser(user);
 
-      // Only show toast if server didn't provide a message
-      if (!message) {
-        toast.success(`Welcome to JAGRUK, ${user.name}!`);
-      } else {
+      // Show success message only if provided by server
+      if (message && success) {
         toast.success(message);
       }
+      
       return { success: true, user };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
-      toast.error(message);
+      // Don't show toast here, let the component handle it
       return { success: false, error: message };
     } finally {
       setLoading(false);

@@ -34,6 +34,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import axios from 'axios';
+import ProfileSidebar from '../Common/ProfileSidebar';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -42,6 +43,26 @@ const StudentDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      type: 'warning',
+      title: 'Fire Drill Tomorrow',
+      message: 'Mandatory fire drill scheduled for tomorrow at 10:00 AM. Please be present.',
+      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      read: false
+    },
+    {
+      id: 2,
+      type: 'info',
+      title: 'Course Materials Updated',
+      message: 'New study materials have been uploaded for your emergency preparedness course',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      read: false
+    }
+  ]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -61,6 +82,61 @@ const StudentDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSidebarMenuClick = (key) => {
+    // Handle sidebar navigation
+    switch (key) {
+      case 'dashboard':
+        // Already on dashboard
+        break;
+      case 'courses':
+        console.log('Navigate to courses');
+        break;
+      case 'notifications':
+        console.log('Navigate to notifications');
+        break;
+      case 'settings':
+        console.log('Navigate to settings');
+        break;
+      default:
+        break;
+    }
+    setSidebarOpen(false);
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    // Implement logout
+    console.log('Logout');
+    handleProfileMenuClose();
+  };
+
+  const handleSettings = () => {
+    console.log('Settings');
+    handleProfileMenuClose();
+  };
+
+  const handleProfile = () => {
+    console.log('Profile');
+    handleProfileMenuClose();
+  };
+
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
+  };
+
+  const handleNotificationClick = (notification) => {
+    console.log('Notification clicked:', notification);
   };
 
   const cardVariants = {
@@ -90,13 +166,32 @@ const StudentDashboard = () => {
   }
 
   return (
-    <Box p={3} sx={{ background: '#f5f5f5', minHeight: '100vh' }}>
-      {/* Header */}
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Welcome back, {user?.name?.split(' ')[0]}! 👋
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <ProfileSidebar
+        open={sidebarOpen}
+        onOpen={() => setSidebarOpen(true)}
+        onClose={() => setSidebarOpen(false)}
+        role="student"
+        onMenuClick={handleSidebarMenuClick}
+        onLogout={handleLogout}
+        profileMenuAnchor={profileMenuAnchor}
+        onProfileMenuOpen={handleProfileMenuOpen}
+        onProfileMenuClose={handleProfileMenuClose}
+        onSettings={handleSettings}
+        onProfile={handleProfile}
+        user={user}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onNotificationClick={handleNotificationClick}
+      />
+
+      <Box sx={{ p: 3, pt: 10 }}>
+        {/* Header */}
+        <Box mb={4}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Welcome back, {user?.name?.split(' ')[0]}! 👋
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
           Let's continue your disaster preparedness journey
         </Typography>
       </Box>
@@ -487,6 +582,7 @@ const StudentDashboard = () => {
           </motion.div>
         </Grid>
       </Grid>
+      </Box>
     </Box>
   );
 };

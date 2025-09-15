@@ -5,15 +5,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Button,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
-  Badge,
-  Chip,
   Tab,
   Tabs,
   Paper,
@@ -21,15 +12,13 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
   LinearProgress,
   Alert,
+  Avatar,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   NotificationsActive as NotificationsIcon,
-  Settings as SettingsIcon,
-  ExitToApp as LogoutIcon,
   Warning as EmergencyIcon,
   School as SchoolIcon,
   CheckCircle as CheckCircleIcon,
@@ -40,11 +29,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import ProfileSidebar from './Common/ProfileSidebar';
 
 const StudentDashboard = ({ user }) => {
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
   const [stats, setStats] = useState({
     drillsAttended: 0,
     totalDrills: 0,
@@ -54,6 +45,32 @@ const StudentDashboard = ({ user }) => {
   const [recentNotifications, setRecentNotifications] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      type: 'warning',
+      title: 'Fire Drill Tomorrow',
+      message: 'Mandatory fire drill scheduled for tomorrow at 10:00 AM. Please be present.',
+      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      read: false
+    },
+    {
+      id: 2,
+      type: 'info',
+      title: 'Course Materials Updated',
+      message: 'New study materials have been uploaded for your emergency preparedness course',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      read: false
+    },
+    {
+      id: 3,
+      type: 'success',
+      title: 'Drill Attendance Recorded',
+      message: 'Your attendance for the recent earthquake drill has been successfully recorded',
+      timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      read: true
+    }
+  ]);
 
   useEffect(() => {
     loadDashboardData();
@@ -92,12 +109,33 @@ const StudentDashboard = ({ user }) => {
     setActiveTab(newValue);
   };
 
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleSidebarMenuClick = (key) => {
+    // Handle sidebar navigation
+    switch (key) {
+      case 'dashboard':
+        setActiveTab(0);
+        break;
+      case 'courses':
+        setActiveTab(1);
+        break;
+      case 'notifications':
+        setActiveTab(2);
+        break;
+      case 'settings':
+        toast.info('Settings feature coming soon!');
+        break;
+      default:
+        break;
+    }
+    setSidebarOpen(false);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
   };
 
   const handleLogout = async () => {
@@ -107,7 +145,28 @@ const StudentDashboard = ({ user }) => {
     } catch (error) {
       toast.error('Logout failed');
     }
-    handleMenuClose();
+    handleProfileMenuClose();
+  };
+
+  const handleSettings = () => {
+    toast.info('Settings feature coming soon!');
+    handleProfileMenuClose();
+  };
+
+  const handleProfile = () => {
+    toast.info('Profile feature coming soon!');
+    handleProfileMenuClose();
+  };
+
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
+  };
+
+  const handleNotificationClick = (notification) => {
+    console.log('Notification clicked:', notification);
+    // Handle notification specific actions here
   };
 
   const StatCard = ({ title, value, icon, color, subtitle, progress }) => (
@@ -392,62 +451,26 @@ const StudentDashboard = ({ user }) => {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* App Bar */}
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
-          <SchoolIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
-            Student Dashboard
-          </Typography>
-          
-          <Badge badgeContent={stats.notifications} color="error" sx={{ mr: 2 }}>
-            <IconButton color="inherit">
-              <NotificationsIcon />
-            </IconButton>
-          </Badge>
-          
-          <IconButton
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenuClick}
-            color="inherit"
-          >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-              {user?.name?.charAt(0) || 'S'}
-            </Avatar>
-          </IconButton>
-          
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleMenuClose}>
-              <SettingsIcon sx={{ mr: 1 }} /> Settings
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleLogout}>
-              <LogoutIcon sx={{ mr: 1 }} /> Logout
-            </MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
+      <ProfileSidebar
+        open={sidebarOpen}
+        onOpen={() => setSidebarOpen(true)}
+        onClose={() => setSidebarOpen(false)}
+        role="student"
+        onMenuClick={handleSidebarMenuClick}
+        onLogout={handleLogout}
+        profileMenuAnchor={profileMenuAnchor}
+        onProfileMenuOpen={handleProfileMenuOpen}
+        onProfileMenuClose={handleProfileMenuClose}
+        onSettings={handleSettings}
+        onProfile={handleProfile}
+        user={user}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onNotificationClick={handleNotificationClick}
+      />
 
       {/* Main Content */}
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, pt: 10 }}>
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

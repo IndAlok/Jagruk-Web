@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Button,
-  IconButton,
   Avatar,
   Chip,
   Switch,
@@ -15,33 +14,19 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemButton,
-  Drawer,
-  AppBar,
-  Toolbar,
-  Badge,
-  Menu,
-  MenuItem,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   CircularProgress,
-  alpha,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Dashboard as DashboardIcon,
   People as PeopleIcon,
   School as SchoolIcon,
-  Settings as SettingsIcon,
   Notifications as NotificationsIcon,
   Security as SecurityIcon,
   Assignment as DrillIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
-  AccountCircle as ProfileIcon,
-  ExitToApp as LogoutIcon,
   CheckCircle as CheckIcon,
   Warning as WarningIcon,
   Info as InfoIcon,
@@ -50,6 +35,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { dashboardAPI, settingsAPI } from '../services/api';
 import { toast } from 'react-toastify';
+import ProfileSidebar from './Common/ProfileSidebar';
 
 // Theme Context for mode switching
 const ThemeContext = React.createContext();
@@ -90,31 +76,6 @@ const AdminDashboard = () => {
       compactMode: false
     }
   });
-
-  // Sidebar sections configuration
-  const sidebarSections = [
-    {
-      id: 'dashboard',
-      title: 'Dashboard Overview',
-      icon: DashboardIcon,
-      color: '#4ECDC4',
-      description: 'Main statistics and overview'
-    },
-    {
-      id: 'management',
-      title: 'User Management',
-      icon: PeopleIcon,
-      color: '#45B7D1', 
-      description: 'Manage students and staff'
-    },
-    {
-      id: 'security',
-      title: 'Security & Drills',
-      icon: SecurityIcon,
-      color: '#FFA726',
-      description: 'Emergency drills and safety'
-    }
-  ];
 
   // Load dashboard data
   const loadDashboardData = useCallback(async () => {
@@ -193,6 +154,51 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSidebarMenuClick = (key) => {
+    // Handle sidebar navigation
+    switch (key) {
+      case 'dashboard':
+        setActiveSection('overview');
+        break;
+      case 'users':
+        setActiveSection('users');
+        break;
+      case 'security':
+        setActiveSection('security');
+        break;
+      case 'settings':
+        setActiveSection('settings');
+        break;
+      default:
+        break;
+    }
+    setSidebarOpen(false);
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
+  };
+
+  const handleProfile = () => {
+    toast.info('Profile feature coming soon!');
+    handleProfileMenuClose();
+  };
+
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
+  };
+
+  const handleNotificationClick = (notification) => {
+    console.log('Notification clicked:', notification);
+    // Handle notification specific actions here
+  };
+
   // Initialize dashboard
   useEffect(() => {
     if (currentUser) {
@@ -249,154 +255,25 @@ const AdminDashboard = () => {
           transition: 'background-color 0.3s ease'
         }}
       >
-        {/* App Bar */}
-        <AppBar 
-          position="fixed" 
-          sx={{ 
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-            background: darkMode 
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-          }}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={() => setSidebarOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            
-            <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-              JAGRUK Admin Dashboard
-            </Typography>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Theme Toggle */}
-              <IconButton color="inherit" onClick={handleThemeToggle}>
-                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-              </IconButton>
-
-              {/* Notifications */}
-              <IconButton color="inherit">
-                <Badge badgeContent={notifications.length} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-
-              {/* Profile Menu */}
-              <IconButton
-                color="inherit"
-                onClick={(e) => setProfileMenuAnchor(e.currentTarget)}
-              >
-                <Avatar 
-                  sx={{ 
-                    width: 32, 
-                    height: 32, 
-                    bgcolor: 'rgba(255,255,255,0.2)' 
-                  }}
-                >
-                  {currentUser?.name?.charAt(0) || 'A'}
-                </Avatar>
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </AppBar>
-
-        {/* Profile Menu */}
-        <Menu
-          anchorEl={profileMenuAnchor}
-          open={Boolean(profileMenuAnchor)}
-          onClose={() => setProfileMenuAnchor(null)}
-          PaperProps={{
-            sx: {
-              mt: 1.5,
-              minWidth: 200,
-              borderRadius: 2,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-            }
-          }}
-        >
-          <MenuItem onClick={() => setSettingsOpen(true)}>
-            <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
-            Settings
-          </MenuItem>
-          <MenuItem onClick={() => setProfileMenuAnchor(null)}>
-            <ListItemIcon><ProfileIcon fontSize="small" /></ListItemIcon>
-            Profile
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={logout}>
-            <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-            Logout
-          </MenuItem>
-        </Menu>
-
-        {/* Sidebar Drawer */}
-        <Drawer
-          anchor="left"
+        <ProfileSidebar
           open={sidebarOpen}
+          onOpen={() => setSidebarOpen(true)}
           onClose={() => setSidebarOpen(false)}
-          PaperProps={{
-            sx: {
-              width: 320,
-              bgcolor: darkMode ? '#1a1a1a' : 'white',
-              borderRight: `1px solid ${alpha('#000', 0.12)}`,
-            }
-          }}
-        >
-          <Toolbar />
-          <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold', color: darkMode ? 'white' : 'inherit' }}>
-              Navigation
-            </Typography>
-            
-            <List>
-              {sidebarSections.map((section) => (
-                <motion.div
-                  key={section.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <ListItemButton
-                    selected={activeSection === section.id}
-                    onClick={() => {
-                      setActiveSection(section.id);
-                      setSidebarOpen(false);
-                    }}
-                    sx={{
-                      mb: 1,
-                      borderRadius: 2,
-                      minHeight: 80,
-                      bgcolor: activeSection === section.id 
-                        ? alpha(section.color, 0.1) 
-                        : 'transparent',
-                      '&:hover': {
-                        bgcolor: alpha(section.color, 0.1),
-                      }
-                    }}
-                  >
-                    <ListItemIcon>
-                      <section.icon sx={{ color: section.color, fontSize: 28 }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          {section.title}
-                        </Typography>
-                      }
-                      secondary={section.description}
-                    />
-                  </ListItemButton>
-                </motion.div>
-              ))}
-            </List>
-          </Box>
-        </Drawer>
+          role="admin"
+          onMenuClick={handleSidebarMenuClick}
+          onLogout={logout}
+          profileMenuAnchor={profileMenuAnchor}
+          onProfileMenuOpen={handleProfileMenuOpen}
+          onProfileMenuClose={handleProfileMenuClose}
+          onSettings={() => setSettingsOpen(true)}
+          onProfile={handleProfile}
+          onThemeToggle={handleThemeToggle}
+          darkMode={darkMode}
+          user={currentUser}
+          notifications={notifications}
+          onMarkAsRead={handleMarkAsRead}
+          onNotificationClick={handleNotificationClick}
+        />
 
         {/* Main Content */}
         <Box
@@ -863,7 +740,6 @@ const UserManagement = ({ darkMode }) => {
 // Security Section Component with real functionality
 const SecuritySection = ({ darkMode }) => {
   const [drills, setDrills] = useState([]);
-  const [incidents, setIncidents] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [loadingDrills, setLoadingDrills] = useState(false);
   const [drillDialogOpen, setDrillDialogOpen] = useState(false);

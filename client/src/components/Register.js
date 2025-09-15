@@ -42,11 +42,15 @@ import {
   Home,
   Class,
   Badge,
-  SupervisorAccount
+  SupervisorAccount,
+  DarkMode,
+  LightMode
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -100,6 +104,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const steps = ['Basic Info', 'Additional Details', 'Verification'];
@@ -178,9 +183,11 @@ const Register = () => {
 
     if (result.success) {
       setSuccess('Registration successful! Redirecting to dashboard...');
+      toast.success(`Welcome to JAGRUK, ${result.user.name}!`);
       setTimeout(() => navigate('/dashboard'), 2000);
     } else {
       setError(result.error);
+      toast.error(result.error);
       setActiveStep(0); // Go back to first step on error
     }
     setLoading(false);
@@ -224,6 +231,27 @@ const Register = () => {
     }
   };
 
+  const getTextFieldStyles = () => ({
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+      '& fieldset': {
+        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
+      },
+      '&:hover fieldset': {
+        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.87)',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: getRoleColor(tabValue),
+      },
+    },
+    '& .MuiInputLabel-root': {
+      color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: getRoleColor(tabValue),
+    },
+  });
+
   const getRoleIcon = (role) => {
     switch (role) {
       case 0: return <School sx={{ color: getRoleColor(0) }} />;
@@ -256,6 +284,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   variant="outlined"
                   required
+                  sx={getTextFieldStyles()}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -275,6 +304,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   variant="outlined"
                   required
+                  sx={getTextFieldStyles()}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -294,6 +324,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   variant="outlined"
                   required
+                  sx={getTextFieldStyles()}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -323,6 +354,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   variant="outlined"
                   required
+                  sx={getTextFieldStyles()}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -365,6 +397,7 @@ const Register = () => {
                       value={currentData.admissionNumber}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -382,6 +415,7 @@ const Register = () => {
                       value={currentData.class}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -400,6 +434,7 @@ const Register = () => {
                       value={currentData.age}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -410,6 +445,7 @@ const Register = () => {
                       value={currentData.parentContact}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -432,6 +468,7 @@ const Register = () => {
                       value={currentData.employeeId}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -449,6 +486,7 @@ const Register = () => {
                       value={currentData.department}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -459,6 +497,7 @@ const Register = () => {
                       value={currentData.designation}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -469,6 +508,7 @@ const Register = () => {
                       value={currentData.phone}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -486,6 +526,7 @@ const Register = () => {
                       value={currentData.emergencyContact}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                 </>
@@ -501,6 +542,7 @@ const Register = () => {
                       value={currentData.adminId}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -518,6 +560,7 @@ const Register = () => {
                       value={currentData.schoolName}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -535,6 +578,7 @@ const Register = () => {
                       value={currentData.district}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -545,6 +589,7 @@ const Register = () => {
                       value={currentData.state}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -555,6 +600,7 @@ const Register = () => {
                       value={currentData.phone}
                       onChange={handleInputChange}
                       variant="outlined"
+                      sx={getTextFieldStyles()}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -575,6 +621,7 @@ const Register = () => {
                   value={currentData.schoolId}
                   onChange={handleInputChange}
                   variant="outlined"
+                  sx={getTextFieldStyles()}
                   helperText="Unique identifier for your educational institution"
                 />
               </Grid>
@@ -589,6 +636,7 @@ const Register = () => {
                   variant="outlined"
                   multiline
                   rows={3}
+                  sx={getTextFieldStyles()}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -632,7 +680,13 @@ const Register = () => {
                 Please review your information and click "Create Account" to complete registration.
               </Typography>
               
-              <Paper sx={{ p: 2, textAlign: 'left', backgroundColor: 'grey.50' }}>
+              <Paper sx={{ 
+                p: 2, 
+                textAlign: 'left', 
+                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'grey.50',
+                color: isDarkMode ? 'white' : 'inherit',
+                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+              }}>
                 <Typography variant="subtitle1" gutterBottom fontWeight="bold">
                   Registration Summary:
                 </Typography>
@@ -662,10 +716,33 @@ const Register = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: `linear-gradient(135deg, ${getRoleColor(tabValue)}20 0%, ${getRoleColor(tabValue)}10 100%)`,
-        position: 'relative'
+        background: isDarkMode 
+          ? `linear-gradient(135deg, ${getRoleColor(tabValue)}40 0%, ${getRoleColor(tabValue)}20 100%)` 
+          : `linear-gradient(135deg, ${getRoleColor(tabValue)}20 0%, ${getRoleColor(tabValue)}10 100%)`,
+        position: 'relative',
+        bgcolor: isDarkMode ? 'grey.900' : 'grey.50'
       }}
     >
+      {/* Dark Mode Toggle */}
+      <IconButton
+        onClick={toggleDarkMode}
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 1000,
+          bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+          backdropFilter: 'blur(10px)',
+          border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+          '&:hover': {
+            bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+            transform: 'scale(1.1)',
+          },
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {isDarkMode ? <LightMode /> : <DarkMode />}
+      </IconButton>
       {/* Animated background elements */}
       <motion.div
         animate={{
@@ -700,9 +777,14 @@ const Register = () => {
             width: { xs: '90vw', sm: 600, md: 700 },
             p: 4,
             borderRadius: 4,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: isDarkMode 
+              ? 'rgba(18, 18, 18, 0.95)' 
+              : 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
+            border: isDarkMode 
+              ? '1px solid rgba(255, 255, 255, 0.1)' 
+              : '1px solid rgba(255, 255, 255, 0.2)',
+            color: isDarkMode ? 'white' : 'inherit'
           }}
         >
           {/* Header */}

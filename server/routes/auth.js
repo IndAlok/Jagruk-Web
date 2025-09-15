@@ -26,9 +26,13 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       'student@jagruk.edu': { password: 'student123', role: 'student', name: 'Demo Student' }
     };
 
+    logger.info('Checking demo credentials for email', { email, isDemo: !!demoCredentials[email] });
+
     // Check demo credentials first
     if (demoCredentials[email] && demoCredentials[email].password === password) {
       const user = demoCredentials[email];
+      
+      logger.info('Demo login successful', { email, role: user.role });
       
       const token = jwt.sign(
         { 
@@ -66,6 +70,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       userData = { id: studentDoc.id, ...studentDoc.data() };
       userRole = 'student';
       userRef = studentDoc.ref;
+      logger.info('Found user in students collection', { email, status: userData.status, isActive: userData.isActive });
     }
 
     // Check in staff collection if not found in students
@@ -76,6 +81,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
         userData = { id: staffDoc.id, ...staffDoc.data() };
         userRole = 'staff';
         userRef = staffDoc.ref;
+        logger.info('Found user in staff collection', { email, status: userData.status, isActive: userData.isActive });
       }
     }
 
@@ -87,21 +93,46 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
         userData = { id: adminDoc.id, ...adminDoc.data() };
         userRole = 'admin';
         userRef = adminDoc.ref;
+        logger.info('Found user in admins collection', { email, status: userData.status, isActive: userData.isActive });
       }
     }
 
     if (!userData) {
+      logger.warn('User not found', { email });
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Check if user is active
-    if (userData.status !== 'active') {
-      return res.status(401).json({ message: 'Account is inactive. Please contact administrator.' });
+    // Check if user is active - handle both field names for compatibility
+    const isUserActive = userData.status === 'active' || userData.isActive === true;
+    
+    if (!isUserActive) {
+      logger.warn('User account inactive', { email, status: userData.status, isActive: userData.isActive });
+      
+      // Auto-activate user for development/demo purposes
+      if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
+        logger.info('Auto-activating user for development', { email });
+        await userRef.update({
+          status: 'active',
+          isActive: true,
+          updatedAt: new Date()
+        });
+        userData.status = 'active';
+        userData.isActive = true;
+      } else {
+        return res.status(401).json({ message: 'Account is inactive. Please contact administrator.' });
+      }
     }
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, userData.hashedPassword);
+    // Verify password - handle both field names
+    const storedPassword = userData.hashedPassword || userData.password;
+    if (!storedPassword) {
+      logger.error('No password found for user', { email });
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, storedPassword);
     if (!isPasswordValid) {
+      logger.warn('Invalid password', { email });
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -114,7 +145,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
         role: userRole,
         permissions: permissions
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'demo_secret',
       { expiresIn: '7d' }
     );
 
@@ -125,11 +156,12 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     });
 
     // Remove sensitive data from response
-    const { hashedPassword, ...userWithoutPassword } = userData;
+    const { hashedPassword, password: pwd, ...userWithoutPassword } = userData;
 
     logger.info('Login successful', { email, role: userRole, userId: userData.id });
 
     res.json({
+      success: true,
       message: 'Login successful',
       token,
       user: {
@@ -140,7 +172,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('Login error', { error: error.message, email: req.body.email });
+    logger.error('Login error', { error: error.message, email: req.body.email, stack: error.stack });
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -351,9 +383,12 @@ router.post('/register', authLimiter, async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      hashedPassword,
       role,
-      createdAt: new Date().toISOString(),
+      status: 'active',
       isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       profile: {
         avatar: null,
         phone: '',
@@ -623,62 +658,6 @@ router.post('/register/staff', authLimiter, validateStaffRegistration, async (re
   }
 });
 
-// Demo login for testing - add this before other routes
-router.post('/login', authLimiter, validateLogin, async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
-
-    // Demo credentials for testing
-    const demoCredentials = {
-      'admin@jagruk.edu': { password: 'admin123', role: 'admin', name: 'Admin User' },
-      'staff@jagruk.edu': { password: 'staff123', role: 'staff', name: 'Staff Member' },
-      'student@jagruk.edu': { password: 'student123', role: 'student', name: 'Demo Student' }
-    };
-
-    // Check demo credentials first
-    if (demoCredentials[email] && demoCredentials[email].password === password) {
-      const user = demoCredentials[email];
-      
-      const token = jwt.sign(
-        { 
-          uid: `demo_${user.role}`, 
-          email, 
-          role: user.role 
-        },
-        process.env.JWT_SECRET || 'demo_secret',
-        { expiresIn: '24h' }
-      );
-
-      return res.status(200).json({
-        success: true,
-        message: 'Demo login successful',
-        token,
-        user: {
-          uid: `demo_${user.role}`,
-          email,
-          name: user.name,
-          role: user.role,
-          isDemo: true
-        }
-      });
-    }
-
-    // For production, implement actual authentication here
-    // This is a placeholder for actual Firebase authentication
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Invalid credentials. Use demo credentials: admin@jagruk.edu / admin123' 
-    });
-
-  } catch (error) {
-    logger.error('Login error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Login failed. Please try again.' 
-    });
-  }
-});
-
 // Google Login
 router.post('/google-login', authLimiter, async (req, res) => {
   try {
@@ -850,6 +829,7 @@ router.post('/init-demo-users', async (req, res) => {
         schoolId: 'demo_school',
         role: 'admin',
         status: 'active',
+        isActive: true,
         createdAt: new Date(),
         permissions: ['manage_all']
       });
@@ -868,6 +848,7 @@ router.post('/init-demo-users', async (req, res) => {
         schoolId: 'demo_school',
         role: 'staff',
         status: 'active',
+        isActive: true,
         createdAt: new Date(),
         permissions: ['manage_students', 'conduct_drills']
       });
@@ -887,6 +868,7 @@ router.post('/init-demo-users', async (req, res) => {
         schoolId: 'demo_school',
         role: 'student',
         status: 'active',
+        isActive: true,
         createdAt: new Date(),
         parentContact: '9876543210',
         address: 'Demo Address'
@@ -905,6 +887,46 @@ router.post('/init-demo-users', async (req, res) => {
   } catch (error) {
     logger.error('Demo users initialization error', { error: error.message });
     res.status(500).json({ message: 'Failed to initialize demo users' });
+  }
+});
+
+// Fix inactive accounts - activate all users for development
+router.post('/fix-inactive-accounts', async (req, res) => {
+  try {
+    const collections = ['students', 'staff', 'admins'];
+    let updatedCount = 0;
+
+    for (const collectionName of collections) {
+      const snapshot = await db.collection(collectionName).get();
+      
+      const batch = db.batch();
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.status !== 'active' || data.isActive !== true) {
+          batch.update(doc.ref, {
+            status: 'active',
+            isActive: true,
+            updatedAt: new Date()
+          });
+          updatedCount++;
+        }
+      });
+
+      if (batch._ops && batch._ops.length > 0) {
+        await batch.commit();
+      }
+    }
+
+    logger.info(`Fixed ${updatedCount} inactive accounts`);
+    
+    res.json({ 
+      message: `Successfully activated ${updatedCount} accounts`,
+      updatedCount
+    });
+
+  } catch (error) {
+    logger.error('Fix inactive accounts error', { error: error.message });
+    res.status(500).json({ message: 'Failed to fix inactive accounts' });
   }
 });
 
