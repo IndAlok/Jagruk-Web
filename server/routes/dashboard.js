@@ -1,3 +1,4 @@
+// Import the standardized auth middleware
 const express = require('express');
 const { db } = require('../config/firebase');
 const { authenticateToken, authorizeAll } = require('../middleware/auth');
@@ -467,28 +468,14 @@ async function getDrillAnalytics(schoolId, startDate) {
     }
   };
 }
-// Middleware to verify JWT token
-const verifyToken = (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
-
-    const jwt = require('jsonwebtoken');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo_secret');
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-};
 
 // Get admin statistics - what the frontend expects
-router.get('/admin/stats', verifyToken, async (req, res) => {
+router.get('/admin/stats', authenticateToken, async (req, res) => {
   try {
     // For demo users, return mock data with some variation
-    if (req.user.userId?.startsWith('demo_')) {
+    if (req.user.isDemo || req.user.uid?.startsWith('demo_')) {
+      logger.info('Serving demo stats for admin dashboard', { uid: req.user.uid });
+      
       const baseStats = {
         totalStudents: Math.floor(Math.random() * 500) + 1000,
         totalStaff: Math.floor(Math.random() * 50) + 50,
@@ -506,6 +493,8 @@ router.get('/admin/stats', verifyToken, async (req, res) => {
         stats: baseStats
       });
     }
+
+    logger.info('Fetching real admin stats', { uid: req.user.uid });
 
     // For real users, fetch from database
     const stats = {
@@ -532,8 +521,10 @@ router.get('/admin/stats', verifyToken, async (req, res) => {
 });
 
 // Get recent activities
-router.get('/admin/activities', verifyToken, async (req, res) => {
+router.get('/admin/activities', authenticateToken, async (req, res) => {
   try {
+    logger.info('Fetching admin activities', { uid: req.user.uid, isDemo: req.user.isDemo });
+    
     const activities = [
       {
         id: 1,
@@ -568,6 +559,49 @@ router.get('/admin/activities', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Activities fetch error:', error);
     res.status(500).json({ message: 'Failed to fetch activities' });
+  }
+});
+
+// Get notifications for dashboard
+router.get('/notifications', authenticateToken, async (req, res) => {
+  try {
+    logger.info('Fetching notifications', { uid: req.user.uid, role: req.user.role });
+    
+    // Mock notifications data
+    const notifications = [
+      {
+        id: 1,
+        type: 'info',
+        title: 'System Update',
+        message: 'New security features have been added to the platform',
+        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+        read: false
+      },
+      {
+        id: 2,
+        type: 'success',
+        title: 'Drill Completed',
+        message: 'Fire safety drill completed successfully with 98% participation',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        read: true
+      },
+      {
+        id: 3,
+        type: 'warning',
+        title: 'Maintenance Scheduled',
+        message: 'System maintenance is scheduled for tonight from 11 PM to 1 AM',
+        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+        read: false
+      }
+    ];
+
+    res.json({
+      success: true,
+      notifications
+    });
+  } catch (error) {
+    logger.error('Error fetching notifications:', error);
+    res.status(500).json({ message: 'Failed to fetch notifications' });
   }
 });
 
