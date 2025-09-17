@@ -35,9 +35,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import axios from 'axios';
 import ProfileSidebar from '../Common/ProfileSidebar';
+import Profile from '../Common/Profile';
 
 const StudentDashboard = () => {
-  const { user } = useAuth();
+  const { currentUser: user } = useAuth();
   const { onlineUsers, alerts } = useSocket();
   
   const [dashboardData, setDashboardData] = useState(null);
@@ -45,6 +46,7 @@ const StudentDashboard = () => {
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -88,15 +90,22 @@ const StudentDashboard = () => {
     // Handle sidebar navigation
     switch (key) {
       case 'dashboard':
-        // Already on dashboard
+        setShowProfile(false);
+        break;
+      case 'profile':
+        setShowProfile(true);
+        setSidebarOpen(false); // Close sidebar when showing profile
         break;
       case 'courses':
+        setShowProfile(false);
         console.log('Navigate to courses');
         break;
       case 'notifications':
+        setShowProfile(false);
         console.log('Navigate to notifications');
         break;
       case 'settings':
+        setShowProfile(false);
         console.log('Navigate to settings');
         break;
       default:
@@ -125,7 +134,7 @@ const StudentDashboard = () => {
   };
 
   const handleProfile = () => {
-    console.log('Profile');
+    setShowProfile(true);
     handleProfileMenuClose();
   };
 
@@ -186,6 +195,14 @@ const StudentDashboard = () => {
       />
 
       <Box sx={{ p: 3, pt: 10 }}>
+        {showProfile ? (
+          <Profile 
+            user={user} 
+            onClose={() => setShowProfile(false)}
+            onBack={() => setShowProfile(false)}
+          />
+        ) : (
+          <>
         {/* Header */}
         <Box mb={4}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -582,6 +599,8 @@ const StudentDashboard = () => {
           </motion.div>
         </Grid>
       </Grid>
+          </>
+        )}
       </Box>
     </Box>
   );

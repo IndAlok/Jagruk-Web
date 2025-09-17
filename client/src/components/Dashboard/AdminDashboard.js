@@ -29,6 +29,9 @@ import {
   CircularProgress,
   Tabs,
   Tab,
+  AppBar,
+  Toolbar,
+  Tab,
   Badge
 } from '@mui/material';
 import {
@@ -45,15 +48,19 @@ import {
   Schedule,
   Emergency,
   Person,
-  NotificationsActive
+  NotificationsActive,
+  Menu as MenuIcon,
+  Person as PersonIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
 import axios from 'axios';
+import ProfileSidebar from '../Common/ProfileSidebar';
+import Profile from '../Common/Profile';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { currentUser: user } = useAuth();
   const { onlineUsers, alerts, sendAlert } = useSocket();
   
   const [activeTab, setActiveTab] = useState(0);
@@ -62,6 +69,12 @@ const AdminDashboard = () => {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Profile and sidebar states
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   // Dialog states
   const [studentDialog, setStudentDialog] = useState(false);
@@ -93,27 +106,170 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [studentsRes, drillsRes, statsRes] = await Promise.all([
-        axios.get('/api/admin/students', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }),
-        axios.get('/api/drills', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        }),
-        axios.get('/api/dashboard/admin', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        })
+      
+      // Fetch dashboard stats from the correct endpoint
+      const statsRes = await axios.get('/api/admin/stats', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      // Fetch students data
+      const studentsRes = await axios.get('/api/admin/students', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (statsRes.data.success) {
+        setDashboardStats(statsRes.data.data);
+      }
+      
+      if (studentsRes.data.success) {
+        setStudents(studentsRes.data.data);
+      } else if (studentsRes.data.students) {
+        // Handle legacy format
+        setStudents(studentsRes.data.students);
+      }
+
+      // Set demo notifications for admin
+      setNotifications([
+        {
+          id: 1,
+          type: 'warning',
+          title: 'System Update',
+          message: 'New security patch available',
+          timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+          read: false
+        },
+        {
+          id: 2,
+          type: 'info',
+          title: 'Weekly Report',
+          message: 'Weekly safety report is ready',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          read: false
+        }
       ]);
 
-      setStudents(studentsRes.data.students || []);
-      setDrills(drillsRes.data.drills || []);
-      setDashboardStats(statsRes.data);
     } catch (error) {
+      console.error('Dashboard data fetch error:', error);
       setError('Failed to load dashboard data');
-      console.error('Dashboard error:', error);
+      
+      // Fallback demo data
+      setDashboardStats({
+        totalStudents: 1250,
+        totalStaff: 85,
+        activeUsers: 342,
+        completedDrills: 15,
+        pendingDrills: 3,
+        totalAlerts: 8,
+        unreadAlerts: 2
+      });
+      
     } finally {
       setLoading(false);
     }
+  };
+
+  // Profile and navigation handlers
+  const handleSidebarMenuClick = (key) => {
+    switch (key) {
+      case 'dashboard':
+        setShowProfile(false);
+        setActiveTab(0); // Show main dashboard
+        break;
+      case 'profile':
+        setShowProfile(true);
+        setSidebarOpen(false); // Close sidebar when showing profile
+        break;
+      case 'users':
+        setActiveTab(1); // Show user management tab
+        setShowProfile(false);
+        break;
+      case 'security':
+        setActiveTab(2); // Show security tab
+        setShowProfile(false);
+        break;
+      case 'settings':
+        setActiveTab(3); // Show settings tab
+        setShowProfile(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Add click handlers for various admin functions
+  const handleAddStudent = () => {
+    setSelectedStudent(null);
+    setStudentDialog(true);
+  };
+
+  const handleAddStaff = () => {
+    // Open add staff dialog
+    console.log('Add Staff clicked');
+    // You can add staff dialog here
+  };
+
+  const handleSendBulkAlert = () => {
+    setAlertDialog(true);
+  };
+
+  const handleScheduleDrill = () => {
+    setDrillDialog(true);
+  };
+
+  const handleViewAnalytics = () => {
+    console.log('View Analytics clicked');
+    // Navigate to analytics view
+  };
+
+  const handleEditStudent = (student) => {
+    setSelectedStudent(student);
+    setStudentDialog(true);
+  };
+
+  const handleDeleteStudent = async (studentId) => {
+    if (window.confirm('Are you sure you want to delete this student?')) {
+      try {
+        await axios.delete(`/api/admin/students/${studentId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        // Refresh students list
+        fetchDashboardData();
+      } catch (error) {
+        console.error('Delete student error:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    // Logout logic handled by ProfileSidebar
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchor(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchor(null);
+  };
+
+  const handleSettings = () => {
+    console.log('Settings');
+    handleProfileMenuClose();
+  };
+
+  const handleProfile = () => {
+    setShowProfile(true);
+    handleProfileMenuClose();
+  };
+
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    );
+  };
+
+  const handleNotificationClick = (notification) => {
+    console.log('Notification clicked:', notification);
   };
 
   const handleSendAlert = async () => {
@@ -177,8 +333,60 @@ const AdminDashboard = () => {
   }
 
   return (
-    <Box p={3} sx={{ background: '#f5f5f5', minHeight: '100vh' }}>
-      {/* Header */}
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* App Bar with hamburger menu */}
+      <AppBar position="fixed" elevation={2} sx={{ zIndex: 1300 }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setSidebarOpen(true)}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Jagruk Admin Dashboard
+          </Typography>
+          <IconButton
+            color="inherit"
+            onClick={handleProfileMenuOpen}
+            sx={{ ml: 'auto' }}
+          >
+            <PersonIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <ProfileSidebar
+        open={sidebarOpen}
+        onOpen={() => setSidebarOpen(true)}
+        onClose={() => setSidebarOpen(false)}
+        role="admin"
+        onMenuClick={handleSidebarMenuClick}
+        onLogout={handleLogout}
+        profileMenuAnchor={profileMenuAnchor}
+        onProfileMenuOpen={handleProfileMenuOpen}
+        onProfileMenuClose={handleProfileMenuClose}
+        onSettings={handleSettings}
+        onProfile={handleProfile}
+        user={user}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onNotificationClick={handleNotificationClick}
+      />
+
+      <Box p={3} sx={{ background: '#f5f5f5', minHeight: '100vh', pt: 10 }}>
+        {showProfile ? (
+          <Profile 
+            user={user} 
+            onClose={() => setShowProfile(false)}
+            onBack={() => setShowProfile(false)}
+          />
+        ) : (
+          <>
+        {/* Header */}
       <Box mb={4}>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Admin Dashboard 🛡️
@@ -197,7 +405,20 @@ const AdminDashboard = () => {
             animate="visible"
             transition={{ delay: 0.1 }}
           >
-            <Card elevation={3} sx={{ textAlign: 'center', p: 2 }}>
+            <Card 
+              elevation={3} 
+              sx={{ 
+                textAlign: 'center', 
+                p: 2, 
+                cursor: 'pointer',
+                '&:hover': { 
+                  transform: 'translateY(-4px)', 
+                  boxShadow: 6 
+                },
+                transition: 'all 0.3s ease'
+              }}
+              onClick={() => setActiveTab(1)} // Navigate to student management
+            >
               <School color="primary" sx={{ fontSize: 48, mb: 1 }} />
               <Typography variant="h4" fontWeight="bold">
                 {dashboardStats?.totalStudents || 0}
@@ -703,6 +924,9 @@ const AdminDashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
+          </>
+        )}
+      </Box>
     </Box>
   );
 };

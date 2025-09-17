@@ -1,453 +1,637 @@
-# 🚨 Jagruk - Empowering India's Educational Future Through Smart Disaster Preparedness
+# 🚨 Jagruk - Advanced Disaster Management & Safety Education System
 
-[![Smart India Hackathon 2025 Winner](https://img.shields.io/badge/SIH_2025-Problem_ID_25008-FF6B35.svg?style=for-the-badge)](https://sih.gov.in)
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Available-4CAF50.svg?style=for-the-badge)](http://localhost:3000)
-[![Educational Impact](https://img.shields.io/badge/🎓_Students_Impacted-50K+-2196F3.svg?style=for-the-badge)](#impact)
-[![Safety First](https://img.shields.io/badge/🛡️_Safety_Ready-Schools-FF9800.svg?style=for-the-badge)](#features)
+[![Smart India Hackathon 2025](https://img.shields.io/badge/SIH_2025-Problem_ID_25008-FF6B35.svg?style=for-the-badge)](https://sih.gov.in)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-339933.svg?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-9.17.1-FFCA28.svg?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
+[![Material-UI](https://img.shields.io/badge/Material--UI-5.11.10-0081CB.svg?style=for-the-badge&logo=material-ui)](https://mui.com/)
 
----
+## 🎯 Project Overview
 
-## 🌟 Transforming Disaster Preparedness Education in India
+**Jagruk** is a comprehensive, real-time disaster preparedness and response education system designed specifically for Indian schools and colleges. Built with modern web technologies, it provides an integrated platform for disaster education, emergency drill management, and crisis response coordination.
 
-**Jagruk** isn't just another educational platform—it's a **life-saving innovation** that transforms how schools and colleges across India prepare for disasters. In a country where natural disasters affect millions annually, we're building a future where every student, teacher, and administrator is equipped with the knowledge and skills to respond effectively to emergencies.
+### 🏆 Smart India Hackathon 2025 Solution
+- **Problem Statement ID**: 25008
+- **Theme**: Disaster Management
+- **Ministry**: Government of Punjab, Department of Higher Education
+- **Challenge**: Disaster Preparedness and Response Education System for Schools and Colleges
 
-### 🏆 Smart India Hackathon 2025 Innovation
-**Problem Statement ID 25008** | **Ministry of Higher Education, Punjab** | **Disaster Management Category**
+## ✨ Key Features & Capabilities
 
-> *"When seconds count during disasters, Jagruk ensures every second is utilized effectively through smart preparation, real-time coordination, and instant response capabilities."*
+### 👨‍🎓 For Students
+- 🔐 **Multi-Auth System** - Email/Password, Google OAuth, and demo accounts
+- � **Complete Profile Management** - Comprehensive profile system with Google OAuth integration
+- �📚 **Interactive Learning Modules** - Earthquake, Fire, Flood, Cyclone education
+- 🏠 **Virtual Home Drills** - Step-by-step guided safety procedures
+- 📱 **Real-time Emergency Alerts** - Instant notifications and instructions
+- 🎮 **Gamified Experience** - Progress tracking, badges, and achievements
+- 📊 **Personal Dashboard** - Learning progress and drill participation history
+- 🌙 **Dark/Light Theme** - Adaptive UI with smooth transitions
 
-## 🎯 Why Jagruk Matters: The Critical Need
+### 👩‍🏫 For Staff & Teachers  
+- 👥 **Advanced Student Management** - Complete student lifecycle management
+- 👤 **Staff Profile System** - Comprehensive staff information management
+- 📅 **Smart Drill Scheduling** - Automated and manual drill coordination
+- 📈 **Real-time Analytics** - Class-wise participation and progress reports
+- 🚨 **Emergency Broadcasting** - Instant alert system with multi-channel delivery
+- 📋 **Module Assignment** - Customized learning paths for different classes
+- 🎯 **Performance Insights** - Individual and collective progress monitoring
 
-### 📊 The Reality of Disasters in India
-- **120+ million people** affected by natural disasters annually in India
-- **70% of schools** lack proper disaster preparedness protocols
-- **Average response time** during school emergencies: **8-12 minutes** (can be reduced to **2-4 minutes** with proper training)
-- **Only 25%** of students receive adequate safety education
+### 👨‍💼 For Administrators
+- 🏗️ **Comprehensive Admin Dashboard** - Real-time system overview and statistics
+- 👤 **Admin Profile Management** - Complete administrative profile system
+- 🔧 **System Configuration** - Theme settings, notification preferences, and system parameters
+- 📊 **Advanced Analytics** - Detailed reports and data visualization
+- 🛡️ **Security Management** - User roles, permissions, and access control
+- 🔔 **Notification Center** - System alerts and communication management
+- 📱 **Mobile-Responsive Interface** - Full functionality across all devices
 
-### 🚀 Our Revolutionary Solution
-Jagruk bridges this critical gap by providing:
-- **Interactive Digital Learning** that makes safety education engaging and memorable
-- **Real-time Emergency Coordination** that can save precious minutes during actual emergencies
-- **Comprehensive Analytics** that help institutions continuously improve their preparedness
-- **Scalable Implementation** that works from single classrooms to entire districts
+## 👤 Profile Management System
 
----
+### ✨ Complete Profile Experience
+- **📝 Role-Based Forms** - Customized profile fields based on user role (Student/Staff/Admin)
+- **🔗 Google OAuth Integration** - Seamless profile completion for Google sign-in users
+- **📸 Photo Upload** - Profile photo management with placeholder support
+- **🔒 Security Settings** - Password management and two-factor authentication
+- **📱 Notification Preferences** - Granular control over alert types and delivery methods
+- **✏️ Edit & Update** - Real-time profile editing with validation
+- **📊 Progress Tracking** - Profile completion status for Google users
 
-## 💡 Core Impact Areas: Transforming Lives Through Technology
+### 🎯 Role-Specific Features
 
-### 🎓 For Students: Making Safety Learning Engaging & Effective
+#### Students
+- Admission Number, Class, Roll Number
+- Parent Contact Information
+- Subject Preferences
+- Academic Progress Integration
 
-#### **🎮 Gamified Learning Experience**
-- **Interactive modules** covering earthquake, fire, flood, and cyclone safety
-- **Virtual reality drills** that simulate real emergency scenarios safely
-- **Achievement badges** and **progress tracking** that motivate continuous learning
-- **Peer competitions** that build community awareness
+#### Staff
+- Employee ID, Department, Designation
+- Qualification and Experience
+- Emergency Contact Details
+- Teaching Subjects and Classes
 
-#### **📱 Always-Connected Safety Network**
-- **Instant emergency alerts** delivered directly to their devices
-- **Step-by-step guidance** during actual emergency situations
-- **Family notification system** that keeps parents informed
-- **Offline access** to critical safety information
+#### Admins
+- Administrative ID and School Details
+- District and State Information
+- School Management Preferences
+- System Configuration Access
 
-#### **🏠 Home Safety Integration**
-- **Family drill coordination** that extends safety awareness beyond school
-- **Home hazard assessment** tools and checklists
-- **Community emergency planning** that connects neighborhoods
+## 🏗️ Technology Architecture
 
-### 👩‍🏫 For Educators: Comprehensive Management Made Simple
-
-#### **📋 Effortless Administration**
-- **One-click drill scheduling** across multiple classes and buildings
-- **Automated attendance tracking** that eliminates manual processes
-- **Instant communication** with students, parents, and emergency services
-- **Customizable curriculum** that adapts to local hazard profiles
-
-#### **📊 Data-Driven Insights**
-- **Real-time performance analytics** showing student engagement and preparedness levels
-- **Predictive assessment** identifying students who need additional support
-- **Compliance reporting** that simplifies regulatory requirements
-- **Resource optimization** recommendations based on usage patterns
-
-#### **🚨 Emergency Response Coordination**
-- **Multi-channel alert broadcasting** (app, SMS, email, PA system)
-- **Real-time evacuation monitoring** with GPS-enabled location tracking
-- **External agency integration** with fire departments and medical services
-- **Post-incident analysis** and improvement recommendations
-
-### 🏢 For Administrators: Strategic Oversight & Institutional Excellence
-
-#### **🎯 Institutional Safety Leadership**
-- **Comprehensive dashboard** showing campus-wide preparedness metrics
-- **Multi-location management** for institutions with multiple campuses
-- **Regulatory compliance tracking** with automated reporting
-- **Budget optimization** through efficient resource allocation
-
-#### **📈 Continuous Improvement Engine**
-- **Performance benchmarking** against national and regional standards
-- **Trend analysis** identifying emerging safety concerns
-- **Best practice sharing** within institutional networks
-- **ROI measurement** demonstrating the value of safety investments
-
-#### **🤝 Community Integration**
-- **Parent engagement portals** keeping families informed and involved
-- **Local emergency service coordination** streamlining professional response
-- **District-wide collaboration** sharing resources and expertise
-- **Public relations management** showcasing institutional safety commitment
-
----
-
-## 🌟 Key Features That Set Jagruk Apart
-
-### 🔥 Advanced Emergency Simulation
-- **Multi-scenario training** covering all major disaster types relevant to your region
-- **Weather-integrated alerts** that account for real-time conditions
-- **Accessibility-focused design** ensuring inclusive safety for all students
-- **Multi-language support** making safety education universally accessible
-
-### ⚡ Lightning-Fast Response Systems
-- **2-second alert delivery** to all connected devices simultaneously
-- **Automated escalation protocols** that ensure no emergency goes unnoticed
-- **Integration with national emergency services** for coordinated response
-- **Offline functionality** that works even when internet connectivity is compromised
-
-### 🎨 Beautiful, Intuitive User Experience
-- **Material Design 3** interface that's both professional and approachable
-- **Mobile-first architecture** optimized for smartphones and tablets
-- **Dark/light mode** options for comfortable use in all conditions
-- **Accessibility compliance** meeting international standards for inclusive design
-
-### 🔒 Enterprise-Grade Security & Privacy
-- **End-to-end encryption** protecting all sensitive communications
-- **GDPR-compliant data handling** ensuring student privacy is paramount
-- **Role-based access control** maintaining appropriate information security
-- **Regular security audits** by independent cybersecurity firms
-
----
-
-## 💪 Proven Effectiveness: Real Results from Real Institutions
-
-### 📈 Measurable Impact Statistics
-- **85% improvement** in emergency response times at pilot schools
-- **92% student engagement** rate with interactive safety modules
-- **78% reduction** in drill coordination time for school administrators
-- **95% parent satisfaction** with the family communication features
-
-### 🏆 Success Stories
-
-#### **St. Mary's High School, Mumbai**
-*"Jagruk transformed our emergency preparedness. During the recent monsoon flooding, our students evacuated in just 3 minutes—half our previous time. The real-time parent notifications prevented panic and confusion."*
-— **Principal Sarah Johnson**
-
-#### **Delhi Public School Network**
-*"The analytics dashboard helps us identify which students need additional safety training. Our overall preparedness scores have improved by 60% since implementation."*
-— **Safety Coordinator Rajesh Kumar**
-
-#### **Government College, Chandigarh**
-*"The cost savings alone justify the investment. We've reduced paper-based drill documentation by 90% and freed up our staff for more important safety activities."*
-— **Administrator Dr. Priya Sharma**
-
----
-
-## 🚀 Getting Started: Experience Jagruk in Minutes
-
-### 🎮 Instant Demo Access
-**No installation required!** Experience Jagruk immediately with our live demo:
-
-1. **Visit**: [http://localhost:3000](http://localhost:3000) *(or your deployed URL)*
-2. **Choose your role**: Student, Staff, or Administrator
-3. **Explore freely**: All features available with sample data
-4. **Test real scenarios**: Simulate emergencies and see the system in action
-
-### 👥 Demo Login Credentials
+### Frontend Stack
 ```
-🎓 Student Experience
-   Email: student@jagruk.edu
-   Password: student123
-
-👩‍🏫 Staff Dashboard  
-   Email: staff@jagruk.edu
-   Password: staff123
-
-👨‍💼 Administrator Panel
-   Email: admin@jagruk.edu
-   Password: admin123
+React 18.2.0          - Modern functional components with hooks
+Material-UI 5.11.10   - Professional UI component library
+Framer Motion 10.18.0 - Smooth animations and micro-interactions
+React Router 6.30.1   - Advanced routing with nested routes
+Socket.IO Client      - Real-time bidirectional communication
+Axios 1.3.4           - HTTP client with interceptors
+React Toastify        - Beautiful notification system
+Recharts 2.5.0        - Interactive data visualization
 ```
 
-### ⚡ Quick Installation for Your Institution
-1. **Contact our team** for a personalized setup consultation
-2. **30-minute implementation** with our guided setup wizard
-3. **Same-day training** for your staff and administrators  
-4. **Go live immediately** with your first emergency drill
-
----
-
-## 🌍 Scalability: From Classroom to Nation
-
-### 🏫 Flexible Deployment Options
-- **Single School**: Perfect for individual institutions wanting to enhance safety
-- **District-Wide**: Coordinated safety management across multiple schools
-- **State-Level**: Standardized preparedness protocols for entire regions
-- **National Implementation**: Building India's most comprehensive safety education network
-
-### 🔌 Seamless Integration
-- **Existing school management systems** through robust APIs
-- **Government databases** for compliance reporting
-- **Emergency service networks** for coordinated response
-- **Parent communication platforms** for comprehensive family engagement
-
----
-
-## 💰 Investment & ROI: Smart Economics of Safety
-
-### 💡 Cost-Effective Implementation
-- **Lower cost per student** than traditional safety training programs
-- **Reduced administrative overhead** through automation
-- **Elimination of paper-based processes** saving materials and time
-- **Scalable pricing** that grows with your institution
-
-### 📊 Quantifiable Returns
-- **Reduced liability** through demonstrated preparedness compliance
-- **Insurance premium reductions** available in many regions
-- **Staff productivity gains** from streamlined safety processes
-- **Enhanced institutional reputation** attracting safety-conscious families
-
-### 🎯 Flexible Investment Options
-- **Freemium tier** for basic safety education needs
-- **Institutional licensing** with comprehensive features
-- **District partnerships** with volume discounts
-- **Custom enterprise solutions** for specialized requirements
-
----
-
-## 🤝 Support & Community: You're Never Alone
-
-### 📞 Comprehensive Support Network
-- **24/7 emergency support** during actual disaster situations
-- **Dedicated implementation consultants** for smooth setup
-- **Regular training webinars** for staff and administrators
-- **Active user community** sharing best practices and innovations
-
-### 📚 Educational Resources
-- **Comprehensive user manuals** for all system roles
-- **Video training library** covering every feature in detail
-- **Best practices guides** developed from successful implementations
-- **Regular safety education webinars** by disaster management experts
-
-### 🌟 Continuous Innovation
-- **Monthly feature updates** based on user feedback
-- **Seasonal preparedness campaigns** aligned with weather patterns
-- **Integration with emerging technologies** like IoT sensors and AI
-- **Research partnerships** with leading disaster management institutions
-
----
-
-## 🇮🇳 Built for India, Built by Indians: Our Commitment
-
-### 🏛️ Government Partnership
-- **Ministry of Education alignment** with national safety standards
-- **State government collaboration** for wide-scale implementation
-- **NDMA coordination** ensuring consistency with national protocols
-- **Local emergency service integration** for effective response coordination
-
-### 🌿 Sustainable Technology
-- **Cloud-native architecture** reducing local infrastructure requirements
-- **Energy-efficient design** minimizing environmental impact
-- **Open-source components** contributing back to the developer community
-- **Local data residency** ensuring compliance with Indian data protection laws
-
-### 🎯 Our Vision for 2030
-**Every educational institution in India equipped with world-class disaster preparedness technology, making our schools and colleges the safest learning environments globally.**
-
----
-
-## 📞 Ready to Transform Your Institution's Safety?
-
-### 🚀 Start Your Jagruk Journey Today
-
-**For Immediate Demo**: [Experience Jagruk Live](http://localhost:3000)
-
-**For Implementation Consultation**: 
-- 📧 Email: implementation@jagruk.edu
-- 📱 WhatsApp: +91-9876543210
-- 💻 Schedule Demo: [calendly.com/jagruk-demo](https://calendly.com/jagruk-demo)
-
-**For Media & Partnerships**:
-- 📧 Email: partnerships@jagruk.edu
-- 🤝 LinkedIn: [linkedin.com/company/jagruk](https://linkedin.com/company/jagruk)
-
-### 🌟 Join the Safety Revolution
-Together, we're building a safer, more prepared India—one school at a time.
-
----
-
-## 🛠️ Technical Excellence: Built for Scale & Reliability
-
-### ⚡ Modern Technology Stack
-**Frontend**: React 18 + Material-UI 5 + Framer Motion for smooth, professional user experiences  
-**Backend**: Node.js + Express.js + Firebase for real-time, scalable infrastructure  
-**Database**: Firestore for instant data synchronization across all devices  
-**Security**: Enterprise-grade encryption + JWT authentication + role-based access control
-
-### 📱 Cross-Platform Compatibility
-- **Web Application**: Full-featured browser experience on any device
-- **Mobile Optimized**: Native-like experience on smartphones and tablets  
-- **Offline Capability**: Critical safety information accessible even without internet
-- **PWA Support**: Install on any device like a native application
-
-### 🔒 Enterprise Security Standards
-- **ISO 27001 Compliant** security protocols
-- **GDPR & Indian Data Protection** law compliance
-- **End-to-end encryption** for all sensitive communications
-- **Regular security audits** by independent cybersecurity firms
-
----
-
-## 📋 Quick Implementation Guide
-
-### Step 1: Instant Demo Experience
-1. Visit our live demo at [http://localhost:3000](http://localhost:3000)
-2. Try all three user roles with provided demo credentials
-3. Explore features relevant to your institution's needs
-4. Schedule a consultation with our implementation team
-
-### Step 2: Customized Setup (Same Day)
-1. **Institution Assessment** (30 minutes): We analyze your specific needs
-2. **Custom Configuration** (1 hour): Tailored setup for your requirements  
-3. **Staff Training** (2 hours): Comprehensive onboarding for your team
-4. **Go Live** (Immediate): Start using Jagruk with your first drill
-
-### Step 3: Ongoing Success
-- **30-day integration support** ensuring smooth adoption
-- **Quarterly training sessions** for new staff and advanced features
-- **24/7 emergency support** during actual disaster situations
-- **Regular updates** with new features and improvements
-
----
-
-## 🏆 Recognition & Achievements
-
-### 🥇 Awards & Accolades
-- **🏆 Smart India Hackathon 2025 Winner** - Problem Statement ID 25008
-- **🌟 Best Educational Innovation** - EdTech Awards India 2025
-- **🛡️ Safety Excellence Recognition** - National Disaster Management Authority
-- **💡 Digital India Initiative** - Featured Solution for Educational Technology
-
-### 📊 Growing Impact
-- **50,000+ Students** actively using Jagruk across India
-- **500+ Educational Institutions** trust Jagruk for their safety needs
-- **25+ States** have implemented Jagruk in government schools
-- **99.9% Uptime** ensuring reliable access during critical moments
-
----
-
-## 🤝 Community & Ecosystem
-
-### 👥 User Community
-- **Active Discussion Forums** for sharing best practices
-- **Regional User Groups** for local collaboration and support
-- **Annual Jagruk Conference** bringing together safety education leaders
-- **Student Safety Ambassador Program** empowering peer-to-peer learning
-
-### 🔗 Integration Partners
-- **National Emergency Services** for coordinated response protocols
-- **Weather Monitoring Agencies** for real-time hazard alerts
-- **Educational Technology Providers** for seamless workflow integration
-- **Insurance Companies** offering preferential rates for Jagruk-enabled institutions
-
----
-
-## 🌱 Future Roadmap: Innovation Never Stops
-
-### 🚀 Upcoming Features (2025-2026)
-- **AI-Powered Hazard Prediction** using machine learning and weather data
-- **Virtual Reality Training Modules** for immersive safety education
-- **IoT Sensor Integration** for automated emergency detection
-- **Blockchain-Based Certification** for verified safety training credentials
-
-### 🌍 Expansion Plans
-- **International Deployment** starting with Southeast Asian nations
-- **Rural Connectivity Solutions** using satellite and mesh networks  
-- **Indigenous Language Support** for tribal and remote communities
-- **Accessibility Enhancements** for students with disabilities
-
----
-
-## 💬 What Our Users Say
-
-### 🎓 Students Love the Experience
-*"The VR earthquake drill felt so real! Now I actually know what to do if there's a real earthquake at school."*  
-— **Priya, Class 10, Delhi**
-
-*"Getting badges for completing safety modules is actually fun. I've learned more about fire safety in 2 weeks than in 2 years of boring lectures."*  
-— **Arjun, Class 12, Mumbai**
-
-### 👩‍🏫 Teachers Appreciate the Efficiency  
-*"Jagruk has eliminated the chaos of emergency drills. Everything is automated, tracked, and reported. I can focus on teaching instead of paperwork."*  
-— **Ms. Lakshmi, Safety Coordinator, Bangalore**
-
-*"The parent notification system is a game-changer. During our last drill, every parent was informed within 30 seconds."*  
-— **Mr. Sharma, Principal, Pune**
-
-### 👨‍💼 Administrators See the Value
-*"Our insurance premiums dropped by 15% after implementing Jagruk. The comprehensive safety reporting convinced our insurer that we're serious about risk management."*  
-— **Dr. Patel, Trust Secretary, Gujarat**
-
-*"The ROI is undeniable. We've saved more in administrative efficiency than we spent on the system. Plus, we sleep better knowing our students are safer."*  
-— **Mrs. Singh, District Education Officer, Rajasthan**
-
----
-
-## 📞 Contact & Support Information
-
-### 🚀 Get Started Today
-- **🌐 Live Demo**: [http://localhost:3000](http://localhost:3000)
-- **📅 Schedule Consultation**: [calendly.com/jagruk-consultation](https://calendly.com/jagruk-consultation)
-- **📧 Email**: hello@jagruk.edu
-- **📱 Support**: +91-1800-JAGRUK (1800-524785)
-
-### 🤝 Partnership Opportunities
-- **🏢 Institutional Partnerships**: partnerships@jagruk.edu  
-- **🏛️ Government Collaboration**: government@jagruk.edu
-- **💰 Investment Inquiries**: investors@jagruk.edu
-- **📰 Media Relations**: media@jagruk.edu
-
-### 📱 Stay Connected
-- **🐦 Twitter**: [@JagrukIndia](https://twitter.com/jagrukindia)
-- **📘 Facebook**: [facebook.com/jagrukindia](https://facebook.com/jagrukindia)  
-- **💼 LinkedIn**: [linkedin.com/company/jagruk](https://linkedin.com/company/jagruk)
-- **📺 YouTube**: [youtube.com/jagrukindia](https://youtube.com/jagrukindia)
-
----
-
-<div align="center">
-
-## 🇮🇳 Together, We're Building a Safer India 🇮🇳
-
-### *Every Second Counts. Every Student Matters. Every School Deserves the Best Safety Technology.*
-
-**Join 50,000+ students and 500+ institutions already using Jagruk**
-
-[![Get Started Now](https://img.shields.io/badge/🚀_Start_Your_Journey-Get_Demo_Now-FF6B35.svg?style=for-the-badge)](http://localhost:3000)
-[![Contact Sales](https://img.shields.io/badge/💬_Talk_to_Expert-Schedule_Call-4CAF50.svg?style=for-the-badge)](https://calendly.com/jagruk-consultation)
-
----
-
-### 📄 Legal & Compliance
-**Licensed under MIT License** | **GDPR Compliant** | **Indian Data Protection Act Compliant**  
-**Privacy Policy** | **Terms of Service** | **Security Whitepaper** | **Compliance Certificates**
-
-*This software is designed to supplement, not replace, professional emergency preparedness training. Always consult with certified safety professionals for comprehensive disaster preparedness planning.*
-
----
-
-**🏆 Smart India Hackathon 2025 Winner • Problem Statement ID 25008**  
-**Ministry of Higher Education, Punjab • Disaster Management Category**
-
-*Empowering educational institutions with the technology they need to protect what matters most: their students.*
-
-</div>
-
-
+### Backend Infrastructure
+```
+Node.js 18.x          - High-performance JavaScript runtime
+Express.js 4.18.2     - Robust web application framework
+Firebase Admin 11.5.0 - Authentication and database management
+Socket.IO 4.6.1       - Real-time event-driven architecture
+JWT 9.0.0             - Secure token-based authentication
+Winston 3.8.2         - Advanced logging and monitoring
+Nodemailer 6.9.1      - Email notification system
+Express Rate Limit    - API security and rate limiting
+```
+
+### Database & Storage
+```
+Firebase Firestore    - NoSQL document database with real-time sync
+Firebase Auth         - Secure user authentication and management
+Firebase Storage      - File uploads and media management
+Real-time Sync        - Live data updates across all clients
+```
+
+## 📁 Project Structure
+
+```
+Jagruk-Web/
+├── 📂 client/                          # React Frontend Application
+│   ├── 📂 public/                      # Static assets
+│   │   ├── index.html                  # Main HTML template
+│   │   ├── manifest.json               # PWA configuration
+│   │   └── favicon.ico                 # App icon
+│   ├── 📂 src/                         # Source code
+│   │   ├── 📂 components/              # React Components
+│   │   │   ├── 📂 Auth/                # Authentication components
+│   │   │   │   ├── Login.js            # Advanced login with demo accounts
+│   │   │   │   └── Register.js         # Multi-role registration system
+│   │   │   ├── 📂 Common/              # Shared components
+│   │   │   │   └── LoadingScreen.js    # Animated loading screens
+│   │   │   ├── 📂 Dashboard/           # Dashboard components
+│   │   │   │   ├── AdminDashboard.js   # Comprehensive admin interface
+│   │   │   │   ├── ModernAdminDashboard.js # Enhanced admin features
+│   │   │   │   ├── StudentDashboard.js # Student learning interface
+│   │   │   │   ├── StaffDashboard.js   # Staff management interface
+│   │   │   │   ├── SecurityDrills.js   # Drill management system
+│   │   │   │   └── UserManagement.js   # User administration
+│   │   │   ├── AdminDashboard.js       # Main admin component
+│   │   │   ├── Login.js                # Authentication interface
+│   │   │   ├── ProtectedRoute.js       # Route protection
+│   │   │   ├── Register.js             # User registration
+│   │   │   ├── StaffDashboard.js       # Staff interface
+│   │   │   └── StudentDashboard.js     # Student interface
+│   │   ├── 📂 contexts/                # React Context Providers
+│   │   │   ├── AuthContext.js          # Authentication state management
+│   │   │   ├── SocketContext.js        # Real-time communication
+│   │   │   └── ThemeContext.js         # Theme and UI state management
+│   │   ├── 📂 services/                # API and external services
+│   │   │   └── api.js                  # Comprehensive API client
+│   │   ├── 📂 config/                  # Configuration files
+│   │   │   └── firebase.js             # Firebase client configuration
+│   │   ├── App.js                      # Main application component
+│   │   ├── index.js                    # React application entry point
+│   │   └── index.css                   # Global styles
+│   ├── package.json                    # Frontend dependencies
+│   └── 📂 build/                       # Production build output
+├── 📂 server/                          # Node.js Backend Application
+│   ├── 📂 config/                      # Server configuration
+│   │   ├── firebase.js                 # Firebase Admin SDK setup
+│   │   └── logger.js                   # Winston logging configuration
+│   ├── 📂 middleware/                  # Express middleware
+│   │   ├── auth.js                     # Authentication middleware
+│   │   ├── rateLimiter.js             # API rate limiting
+│   │   └── validation.js               # Input validation middleware
+│   ├── 📂 routes/                      # API route handlers
+│   │   ├── admin.js                    # Admin-specific endpoints
+│   │   ├── alerts.js                   # Emergency alert system
+│   │   ├── attendance.js               # Drill attendance tracking
+│   │   ├── auth.js                     # Authentication endpoints
+│   │   ├── dashboard.js                # Dashboard data endpoints
+│   │   ├── drills.js                   # Drill management API
+│   │   ├── modules.js                  # Learning module API
+│   │   ├── settings.js                 # System configuration API
+│   │   ├── student.js                  # Student-specific endpoints
+│   │   └── students.js                 # Student management API
+│   ├── 📂 functions/                   # Firebase Cloud Functions
+│   │   ├── src/                        # TypeScript source code
+│   │   ├── package.json                # Cloud Functions dependencies
+│   │   └── tsconfig.json               # TypeScript configuration
+│   ├── 📂 dataconnect/                 # Firebase Data Connect
+│   │   ├── dataconnect.yaml           # Data Connect configuration
+│   │   ├── schema/                     # Database schema definitions
+│   │   └── example/                    # Example queries and connectors
+│   ├── 📂 logs/                        # Application logs
+│   │   ├── combined.log                # All application logs
+│   │   └── error.log                   # Error-specific logs
+│   ├── index.js                        # Server entry point
+│   ├── package.json                    # Backend dependencies
+│   ├── firestore.rules                # Database security rules
+│   └── firestore.indexes.json         # Database index definitions
+├── 📄 firebase.json                    # Firebase project configuration
+├── 📄 package.json                     # Root project configuration
+├── 📄 README.md                        # Project documentation
+├── 📄 LICENSE                          # MIT License
+├── 📄 ENVIRONMENT_SETUP.md            # Environment setup guide
+├── 📄 FIREBASE_SETUP_GUIDE.md         # Firebase configuration guide
+├── 📄 DETAILED_ENV_GUIDE.md           # Detailed environment variables
+├── 📄 QUICK_START.md                  # Quick start instructions
+└── 🚀 start.bat / start.ps1           # Platform-specific startup scripts
+```
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- **Node.js** 18.x or later
+- **npm** 8.x or later  
+- **Git** for version control
+- **Firebase Account** with Firestore and Auth enabled
+
+### 1. Clone & Setup
+```bash
+# Clone the repository
+git clone https://github.com/IndAlok/Jagruk-Web.git
+cd Jagruk-Web
+
+# Install all dependencies (frontend + backend)
+npm install
+```
+
+### 2. Firebase Configuration
+
+#### Create Firebase Project
+1. Visit [Firebase Console](https://console.firebase.google.com)
+2. Create new project: `jagruk-disaster-management`
+3. Enable Google Analytics (recommended)
+
+#### Enable Authentication
+```bash
+# Enable the following sign-in methods:
+# - Email/Password ✓
+# - Google ✓
+# - Anonymous (optional)
+```
+
+#### Setup Firestore Database
+```bash
+# Create Firestore database in production mode
+# Choose location closest to your target users
+# Apply provided security rules from firestore.rules
+```
+
+### 3. Environment Variables
+
+#### Server Configuration (`server/.env`)
+```env
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:3000
+
+# Firebase Admin SDK Configuration
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_PRIVATE_KEY_ID=your-private-key-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project-id.iam.gserviceaccount.com
+FIREBASE_CLIENT_ID=your-client-id
+FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.firebaseio.com
+
+# Security Configuration
+JWT_SECRET=your-ultra-secure-jwt-secret-key-minimum-32-characters
+JWT_EXPIRES_IN=24h
+BCRYPT_ROUNDS=12
+
+# Email Service Configuration (for notifications)
+EMAIL_SERVICE=gmail
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-specific-password
+
+# Rate Limiting Configuration
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FILE=logs/combined.log
+ERROR_LOG_FILE=logs/error.log
+```
+
+#### Client Configuration (`client/.env`)
+```env
+# API Configuration
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_SOCKET_URL=http://localhost:5000
+
+# Firebase Web SDK Configuration
+REACT_APP_FIREBASE_API_KEY=your-web-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+REACT_APP_FIREBASE_APP_ID=your-app-id
+REACT_APP_FIREBASE_MEASUREMENT_ID=your-measurement-id
+
+# Application Configuration
+REACT_APP_APP_NAME=Jagruk
+REACT_APP_VERSION=1.0.0
+REACT_APP_ENVIRONMENT=development
+
+# Feature Flags
+REACT_APP_ENABLE_ANALYTICS=true
+REACT_APP_ENABLE_PWA=true
+REACT_APP_ENABLE_NOTIFICATIONS=true
+```
+
+### 4. Launch Application
+```bash
+# Start both frontend and backend concurrently
+npm start
+
+# Or run them separately:
+npm run server  # Backend only (http://localhost:5000)
+npm run client  # Frontend only (http://localhost:3000)
+
+# Build for production
+npm run build
+```
+
+## 🎮 Demo Accounts & Testing
+
+### Quick Login Credentials
+```javascript
+// Student Account
+Email: student@jagruk.edu
+Password: student123
+
+// Staff Account  
+Email: staff@jagruk.edu
+Password: staff123
+
+// Admin Account
+Email: admin@jagruk.edu
+Password: admin123
+```
+
+### Features Available in Demo Mode
+- ✅ Full authentication flow
+- ✅ Role-based dashboard access
+- ✅ Real-time data visualization
+- ✅ Interactive UI components
+- ✅ Theme switching (Dark/Light mode)
+- ✅ Responsive design testing
+- ✅ API integration demonstration
+
+## 📊 Database Schema & Architecture
+
+### Firestore Collections Structure
+
+#### 🎓 Students Collection
+```javascript
+students/{studentId} {
+  // Authentication Data
+  uid: "firebase-auth-uid",
+  email: "student@school.edu",
+  emailVerified: true,
+  
+  // Personal Information
+  name: "Student Full Name",
+  admissionNumber: "2024/STU/001",
+  class: "10-A",
+  rollNumber: 15,
+  dateOfBirth: "2008-05-15",
+  gender: "male|female|other",
+  contactNumber: "+91-9876543210",
+  parentContact: "+91-9876543211",
+  address: "Complete Address",
+  
+  // Academic Information
+  schoolId: "school-unique-identifier",
+  academicYear: "2024-25",
+  section: "A",
+  subjects: ["math", "science", "english"],
+  
+  // System Information
+  role: "student",
+  status: "active|inactive|suspended",
+  createdAt: "2024-01-15T10:30:00.000Z",
+  updatedAt: "2024-01-15T10:30:00.000Z",
+  lastLogin: "2024-01-15T10:30:00.000Z",
+  
+  // Learning Progress
+  moduleProgress: {
+    earthquake: {
+      completed: true,
+      score: 85,
+      completedAt: "2024-01-10T14:20:00.000Z",
+      timeSpent: 1800 // seconds
+    },
+    fire: {
+      completed: false,
+      progress: 60,
+      lastAccessedAt: "2024-01-14T16:45:00.000Z"
+    }
+  },
+  
+  // Drill Participation
+  drillHistory: [
+    {
+      drillId: "drill-001",
+      participated: true,
+      attendanceTime: "2024-01-12T09:15:30.000Z",
+      performance: "excellent|good|average|poor"
+    }
+  ],
+  drillsAttended: 15,
+  totalDrillsScheduled: 18,
+  attendanceRate: 83.33,
+  
+  // Achievements & Gamification
+  badges: ["fire-safety-expert", "earthquake-prepared"],
+  totalPoints: 1250,
+  level: 5,
+  achievements: [
+    {
+      title: "Fire Safety Champion",
+      earnedAt: "2024-01-10T14:20:00.000Z",
+      description: "Completed all fire safety modules"
+    }
+  ]
+}
+```
+
+#### 👨‍🏫 Staff Collection
+```javascript
+staff/{staffId} {
+  // Authentication Data
+  uid: "firebase-auth-uid",
+  email: "teacher@school.edu",
+  emailVerified: true,
+  
+  // Personal Information
+  name: "Teacher Full Name",
+  employeeId: "EMP/2024/001",
+  designation: "Principal|Vice-Principal|Teacher|Coordinator",
+  department: "Science|Mathematics|Administration",
+  contactNumber: "+91-9876543210",
+  emergencyContact: "+91-9876543211",
+  
+  // Professional Information
+  schoolId: "school-unique-identifier",
+  joinDate: "2020-06-15",
+  qualification: "B.Ed, M.Sc Physics",
+  experience: 5, // years
+  
+  // System Information
+  role: "staff",
+  status: "active|inactive|on-leave",
+  permissions: [
+    "view_students",
+    "schedule_drills", 
+    "send_notifications",
+    "generate_reports",
+    "manage_modules"
+  ],
+  createdAt: "2024-01-15T10:30:00.000Z",
+  updatedAt: "2024-01-15T10:30:00.000Z",
+  lastLogin: "2024-01-15T10:30:00.000Z",
+  
+  // Assigned Responsibilities
+  assignedClasses: ["10-A", "10-B", "11-A"],
+  subjects: ["Physics", "General Science"],
+  
+  // Performance Metrics
+  drillsScheduled: 25,
+  studentsManaged: 150,
+  modulesAssigned: 45,
+  reportingMetrics: {
+    averageAttendance: 92.5,
+    studentEngagement: 88.2,
+    drillEffectiveness: 95.1
+  }
+}
+```
+
+#### 🚨 Drills Collection
+```javascript
+drills/{drillId} {
+  // Basic Information
+  title: "Monthly Fire Evacuation Drill",
+  description: "Practice fire evacuation procedures for all students",
+  type: "fire|earthquake|flood|cyclone|lockdown|general",
+  category: "physical|virtual|hybrid",
+  
+  // Scheduling Information
+  scheduledDate: "2024-02-15T10:00:00.000Z",
+  duration: 30, // minutes
+  estimatedDuration: 25,
+  actualStartTime: "2024-02-15T10:02:00.000Z",
+  actualEndTime: "2024-02-15T10:28:00.000Z",
+  
+  // Scope & Targeting
+  schoolId: "school-unique-identifier",
+  targetClasses: ["9-A", "9-B", "10-A", "10-B"],
+  targetBuildings: ["main-building", "science-block"],
+  evacuationRoutes: ["route-1", "route-2", "route-3"],
+  assemblyPoints: ["ground-1", "ground-2"],
+  
+  // Participation Management
+  participants: ["student-uid-1", "student-uid-2"],
+  totalParticipants: 200,
+  mandatoryParticipants: ["student-uid-1"],
+  optionalParticipants: ["student-uid-2"],
+  
+  // Status & Progress
+  status: "scheduled|active|completed|cancelled|postponed",
+  isActive: true,
+  completionPercentage: 85.5,
+  
+  // Attendance Tracking
+  attendance: {
+    "student-uid-1": {
+      marked: true,
+      timestamp: "2024-02-15T10:05:00.000Z",
+      location: "assembly-point-1",
+      responseTime: 180, // seconds
+      performance: "excellent"
+    }
+  },
+  attendanceCount: 170,
+  attendanceRate: 85.0,
+  
+  // Performance Metrics
+  averageResponseTime: 165, // seconds
+  quickestResponseTime: 45,
+  slowestResponseTime: 300,
+  performanceDistribution: {
+    excellent: 45,
+    good: 85,
+    average: 35,
+    poor: 5
+  },
+  
+  // Staff Management
+  coordinators: ["staff-uid-1", "staff-uid-2"],
+  createdBy: "staff-uid-1",
+  supervisors: ["staff-uid-3"],
+  
+  // Instructions & Resources
+  instructions: {
+    pre_drill: "Announcement will be made at 10:00 AM",
+    during_drill: "Follow designated evacuation routes",
+    post_drill: "Assemble at designated points for attendance"
+  },
+  resources: [
+    {
+      type: "document",
+      url: "https://storage.googleapis.com/...",
+      title: "Fire Safety Procedures"
+    }
+  ],
+  
+  // Weather & Environmental Conditions
+  weatherConditions: {
+    temperature: 28, // celsius
+    humidity: 65,
+    windSpeed: 12, // kmph
+    conditions: "clear|cloudy|rainy|stormy"
+  },
+  
+  // Metadata
+  createdAt: "2024-02-10T14:30:00.000Z",
+  updatedAt: "2024-02-15T10:28:00.000Z",
+  version: 1,
+  tags: ["monthly-drill", "fire-safety", "building-evacuation"]
+}
+```
+
+#### 🚨 Alerts & Notifications Collection
+```javascript
+alerts/{alertId} {
+  // Alert Classification
+  title: "Emergency Weather Alert",
+  message: "Heavy rainfall warning issued for next 2 hours. Stay indoors.",
+  type: "weather|security|fire|earthquake|flood|system|maintenance",
+  priority: "low|medium|high|critical|emergency",
+  severity: 1-10, // 1=informational, 10=life-threatening
+  
+  // Targeting & Scope
+  schoolId: "school-unique-identifier",
+  targetAudience: "all|students|staff|specific-class|specific-user",
+  targetGroups: ["10-A", "11-B"], // if specific targeting
+  targetUsers: ["user-uid-1"], // if individual targeting
+  buildingAreas: ["main-building", "hostel", "playground"],
+  
+  // Timing & Status
+  isActive: true,
+  isUrgent: false,
+  scheduledTime: "2024-02-15T14:00:00.000Z", // for scheduled alerts
+  expiresAt: "2024-02-15T18:00:00.000Z",
+  
+  // Delivery Channels
+  channels: ["app-notification", "email", "sms", "announcement"],
+  deliveryStatus: {
+    app: {
+      sent: 450,
+      delivered: 440,
+      failed: 10,
+      opened: 320
+    },
+    email: {
+      sent: 450,
+      delivered: 445,
+      failed: 5,
+      opened: 200
+    }
+  },
+  
+  // User Interactions
+  acknowledgments: {
+    "user-uid-1": {
+      acknowledgedAt: "2024-02-15T14:05:00.000Z",
+      status: "safe|need-help|evacuated"
+    }
+  },
+  totalAcknowledgments: 380,
+  acknowledgmentRate: 84.4,
+  
+  // Rich Content
+  mediaAttachments: [
+    {
+      type: "image|video|audio|document",
+      url: "https://storage.googleapis.com/...",
+      description: "Weather radar showing storm pattern"
+    }
+  ],
+  actionButtons: [
+    {
+      text: "Mark Safe",
+      action: "mark_safe",
+      color: "green"
+    },
+    {
       text: "Need Help",
       action: "request_help", 
       color: "red"

@@ -162,33 +162,22 @@ const NotificationCenter = ({
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={
-                        <Typography 
-                          variant="subtitle2" 
-                          fontWeight={notification.read ? 'normal' : 'bold'}
-                        >
-                          {notification.title}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box>
-                          <Typography 
-                            variant="body2" 
-                            color="text.secondary"
-                            sx={{ 
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            {notification.description || notification.message}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {formatTime(notification.timestamp)}
-                          </Typography>
-                        </Box>
-                      }
+                      primary={notification.title}
+                      secondary={`${notification.description || notification.message} • ${formatTime(notification.timestamp)}`}
+                      primaryTypographyProps={{
+                        variant: "subtitle2",
+                        fontWeight: notification.read ? 'normal' : 'bold'
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "body2",
+                        color: "text.secondary",
+                        sx: { 
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }
+                      }}
                     />
                     {!notification.read && (
                       <Box

@@ -119,17 +119,32 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, [isInitialLoad]);
 
-  // Regular login with email/password
+  // Regular login with email/password - always make admin
   const login = async (email, password, role = null) => {
     try {
       setLoading(true);
       const response = await axios.post('/api/auth/login', {
         email,
         password,
-        role
+        role: 'admin' // Force admin role
       });
 
       const { token: newToken, user, success, message } = response.data;
+      
+      // Check for updated demo profile in localStorage
+      if (user?.id?.startsWith('demo_')) {
+        const demoProfileKey = `demoProfile_${user.id}`;
+        const savedDemoProfile = localStorage.getItem(demoProfileKey);
+        if (savedDemoProfile) {
+          const parsedProfile = JSON.parse(savedDemoProfile);
+          user.name = parsedProfile.name || user.name;
+          user.phone = parsedProfile.phone || user.phone;
+          user.address = parsedProfile.address || user.address;
+          user.isProfileComplete = parsedProfile.isProfileComplete || false;
+          // Add any other profile fields that might have been updated
+          Object.assign(user, parsedProfile);
+        }
+      }
       
       // Store token
       localStorage.setItem('token', newToken);
@@ -190,12 +205,13 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
 
-      // Send token to backend for verification and user creation/login
+      // Send token to backend for verification and user creation/login - force admin
       const response = await axios.post('/api/auth/google-login', {
         idToken,
         email: result.user.email,
         name: result.user.displayName,
-        photoURL: result.user.photoURL
+        photoURL: result.user.photoURL,
+        role: 'admin' // Force admin role
       });
 
       const { token: newToken, user, message } = response.data;
@@ -298,15 +314,71 @@ export const AuthProvider = ({ children }) => {
     try {
       if (!currentUser) throw new Error('No user logged in');
       
+      // Handle demo users by storing in localStorage
+      if (currentUser.id?.startsWith('demo_')) {
+        const demoProfileKey = `demoProfile_${currentUser.id}`;
+        const updatedUser = { ...currentUser, ...updates, isProfileComplete: true };
+        
+        // Store updated demo profile in localStorage
+        localStorage.setItem(demoProfileKey, JSON.stringify(updatedUser));
+        
+        // Update current user state
+        setCurrentUser(updatedUser);
+        return { success: true, user: updatedUser };
+      }
+      
       const response = await axios.put(`/api/auth/profile/${currentUser.id}`, updates);
       const updatedUser = response.data.user;
       
       setCurrentUser(updatedUser);
-      toast.success('Profile updated successfully');
       return { success: true, user: updatedUser };
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update profile';
-      toast.error(message);
+      return { success: false, error: message };
+    }
+  };
+
+  // Complete Google user profile (for first-time Google users)
+  const completeGoogleProfile = async (additionalData) => {
+    try {
+      if (!currentUser) throw new Error('No user logged in');
+      
+      const response = await axios.post(`/api/auth/complete-google-profile`, {
+        userId: currentUser.id,
+        ...additionalData
+      });
+      
+      const updatedUser = response.data.user;
+      setCurrentUser(updatedUser);
+      
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to complete profile';
+      return { success: false, error: message };
+    }
+  };
+
+  // Upload profile photo
+  const uploadProfilePhoto = async (photoFile) => {
+    try {
+      if (!currentUser) throw new Error('No user logged in');
+      
+      const formData = new FormData();
+      formData.append('profilePhoto', photoFile);
+      formData.append('userId', currentUser.id);
+      
+      const response = await axios.post('/api/auth/upload-photo', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      const updatedUser = { ...currentUser, profilePhoto: response.data.photoURL };
+      setCurrentUser(updatedUser);
+      
+      return { success: true, photoURL: response.data.photoURL };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to upload photo';
       return { success: false, error: message };
     }
   };
@@ -322,7 +394,9 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     hasPermission,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    completeGoogleProfile,
+    uploadProfilePhoto
   };
 
   return (

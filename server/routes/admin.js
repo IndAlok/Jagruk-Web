@@ -1,10 +1,92 @@
 const express = require('express');
-const { db } = require('../config/firebase');
+const router = express.Router();
+const { db, admin } = require('../config/firebase');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 const { validateDrillSchedule, validateAlert } = require('../middleware/validation');
 const logger = require('../config/logger');
 
-const router = express.Router();
+// Get admin dashboard stats
+router.get('/stats', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    // For demo admin, return mock stats
+    if (req.user.userId && req.user.userId.startsWith('demo_')) {
+      const mockStats = {
+        totalStudents: 1250,
+        totalStaff: 85,
+        activeUsers: 342,
+        completedDrills: 15,
+        pendingDrills: 3,
+        totalAlerts: 8,
+        unreadAlerts: 2,
+        moduleCompletion: 78.5,
+        emergencyPreparedness: 85.2,
+        recentActivities: [
+          {
+            id: 1,
+            type: 'drill',
+            title: 'Fire Drill Completed',
+            description: 'Building A fire drill completed successfully',
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+            status: 'completed'
+          },
+          {
+            id: 2,
+            type: 'alert',
+            title: 'Weather Alert',
+            description: 'Severe weather warning issued',
+            timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+            status: 'active'
+          },
+          {
+            id: 3,
+            type: 'user',
+            title: 'New Staff Registration',
+            description: '3 new staff members joined',
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+            status: 'completed'
+          }
+        ]
+      };
+
+      return res.json({
+        success: true,
+        data: mockStats
+      });
+    }
+
+    // Real implementation for actual admins
+    const [studentsSnapshot, staffSnapshot, drillsSnapshot, alertsSnapshot] = await Promise.all([
+      db.collection('students').get(),
+      db.collection('staff').get(),
+      db.collection('drills').get(),
+      db.collection('alerts').get()
+    ]);
+
+    const stats = {
+      totalStudents: studentsSnapshot.size,
+      totalStaff: staffSnapshot.size,
+      activeUsers: studentsSnapshot.docs.filter(doc => doc.data().status === 'active').length,
+      completedDrills: drillsSnapshot.docs.filter(doc => doc.data().status === 'completed').length,
+      pendingDrills: drillsSnapshot.docs.filter(doc => doc.data().status === 'scheduled').length,
+      totalAlerts: alertsSnapshot.size,
+      unreadAlerts: alertsSnapshot.docs.filter(doc => !doc.data().read).length,
+      recentActivities: []
+    };
+
+    res.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    logger.error('Get admin stats error', { error: error.message });
+    res.status(500).json({ message: 'Failed to fetch dashboard stats' });
+  }
+});
 
 // Demo students endpoint for testing - add before authentication middleware
 router.get('/demo/students', async (req, res) => {

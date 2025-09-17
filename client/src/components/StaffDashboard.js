@@ -29,12 +29,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import ProfileSidebar from './Common/ProfileSidebar';
+import Profile from './Common/Profile';
 
-const StaffDashboard = ({ user }) => {
-  const { logout } = useAuth();
+const StaffDashboard = () => {
+  const { currentUser: user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenuAnchor, setProfileMenuAnchor] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
   const [stats, setStats] = useState({
     assignedStudents: 0,
     completedDrills: 0,
@@ -107,15 +109,23 @@ const StaffDashboard = ({ user }) => {
     // Handle sidebar navigation
     switch (key) {
       case 'dashboard':
+        setShowProfile(false);
         setActiveTab(0);
         break;
+      case 'profile':
+        setShowProfile(true);
+        setSidebarOpen(false); // Close sidebar when showing profile
+        break;
       case 'students':
+        setShowProfile(false);
         setActiveTab(1);
         break;
       case 'notifications':
+        setShowProfile(false);
         toast.info('Notifications feature coming soon!');
         break;
       case 'settings':
+        setShowProfile(false);
         toast.info('Settings feature coming soon!');
         break;
       default:
@@ -148,7 +158,7 @@ const StaffDashboard = ({ user }) => {
   };
 
   const handleProfile = () => {
-    toast.info('Profile feature coming soon!');
+    setShowProfile(true);
     handleProfileMenuClose();
   };
 
@@ -396,6 +406,14 @@ const StaffDashboard = ({ user }) => {
 
       {/* Main Content */}
       <Box sx={{ p: 3, pt: 10 }}>
+        {showProfile ? (
+          <Profile 
+            user={user} 
+            onClose={() => setShowProfile(false)}
+            onBack={() => setShowProfile(false)}
+          />
+        ) : (
+          <>
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -441,6 +459,8 @@ const StaffDashboard = ({ user }) => {
             {tabContent[activeTab]}
           </motion.div>
         </AnimatePresence>
+          </>
+        )}
       </Box>
 
       {/* Floating Action Button */}

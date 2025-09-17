@@ -36,18 +36,21 @@ import NotificationCenter from './NotificationCenter';
 const menuOptions = {
   admin: [
     { text: 'Dashboard', icon: <DashboardIcon />, key: 'dashboard' },
+    { text: 'My Profile', icon: <ProfileIcon />, key: 'profile' },
     { text: 'User Management', icon: <PeopleIcon />, key: 'users' },
     { text: 'Security', icon: <SecurityIcon />, key: 'security' },
     { text: 'Settings', icon: <SettingsIcon />, key: 'settings' },
   ],
   staff: [
     { text: 'Dashboard', icon: <DashboardIcon />, key: 'dashboard' },
+    { text: 'My Profile', icon: <ProfileIcon />, key: 'profile' },
     { text: 'Students', icon: <SchoolIcon />, key: 'students' },
     { text: 'Notifications', icon: <NotificationsIcon />, key: 'notifications' },
     { text: 'Settings', icon: <SettingsIcon />, key: 'settings' },
   ],
   student: [
     { text: 'Dashboard', icon: <DashboardIcon />, key: 'dashboard' },
+    { text: 'My Profile', icon: <ProfileIcon />, key: 'profile' },
     { text: 'My Courses', icon: <SchoolIcon />, key: 'courses' },
     { text: 'Notifications', icon: <NotificationsIcon />, key: 'notifications' },
     { text: 'Settings', icon: <SettingsIcon />, key: 'settings' },
@@ -115,7 +118,7 @@ const ProfileSidebar = ({
 
             <IconButton color="inherit" onClick={onProfileMenuOpen}>
               <Avatar 
-                src={user?.photoURL} 
+                src={user?.profilePhoto || user?.photoURL} 
                 alt={user?.displayName || user?.name || 'Profile'}
                 sx={{ 
                   width: 32, 

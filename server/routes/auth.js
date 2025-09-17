@@ -19,11 +19,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     
     logger.info('Login attempt', { email });
 
-    // Demo credentials for testing (check first)
+    // Demo credentials for testing (all become admin)
     const demoCredentials = {
       'admin@jagruk.edu': { password: 'admin123', role: 'admin', name: 'Admin User' },
-      'staff@jagruk.edu': { password: 'staff123', role: 'staff', name: 'Staff Member' },
-      'student@jagruk.edu': { password: 'student123', role: 'student', name: 'Demo Student' }
+      'staff@jagruk.edu': { password: 'staff123', role: 'admin', name: 'Staff Member (Admin)' },
+      'student@jagruk.edu': { password: 'student123', role: 'admin', name: 'Demo Student (Admin)' }
     };
 
     logger.info('Checking demo credentials for email', { email, isDemo: !!demoCredentials[email] });
@@ -63,25 +63,25 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     let userRole = null;
     let userRef = null;
 
-    // Check in students collection
+    // Check in students collection - but force admin role
     const studentQuery = await db.collection('students').where('email', '==', email).get();
     if (!studentQuery.empty) {
       const studentDoc = studentQuery.docs[0];
       userData = { id: studentDoc.id, ...studentDoc.data() };
-      userRole = 'student';
+      userRole = 'admin'; // Force admin role
       userRef = studentDoc.ref;
-      logger.info('Found user in students collection', { email, status: userData.status, isActive: userData.isActive });
+      logger.info('Found user in students collection - forcing admin role', { email, status: userData.status, isActive: userData.isActive });
     }
 
-    // Check in staff collection if not found in students
+    // Check in staff collection if not found in students - but force admin role
     if (!userData) {
       const staffQuery = await db.collection('staff').where('email', '==', email).get();
       if (!staffQuery.empty) {
         const staffDoc = staffQuery.docs[0];
         userData = { id: staffDoc.id, ...staffDoc.data() };
-        userRole = 'staff';
+        userRole = 'admin'; // Force admin role
         userRef = staffDoc.ref;
-        logger.info('Found user in staff collection', { email, status: userData.status, isActive: userData.isActive });
+        logger.info('Found user in staff collection - forcing admin role', { email, status: userData.status, isActive: userData.isActive });
       }
     }
 
@@ -236,22 +236,22 @@ router.post('/google-login', authLimiter, async (req, res) => {
     let userRole = null;
     let userRef = null;
 
-    // Check in students collection
+    // Check in students collection - force admin role
     const studentQuery = await db.collection('students').where('email', '==', email).get();
     if (!studentQuery.empty) {
       const studentDoc = studentQuery.docs[0];
       userData = { id: studentDoc.id, ...studentDoc.data() };
-      userRole = 'student';
+      userRole = 'admin'; // Force admin role
       userRef = studentDoc.ref;
     }
 
-    // Check in staff collection if not found
+    // Check in staff collection if not found - force admin role
     if (!userData) {
       const staffQuery = await db.collection('staff').where('email', '==', email).get();
       if (!staffQuery.empty) {
         const staffDoc = staffQuery.docs[0];
         userData = { id: staffDoc.id, ...staffDoc.data() };
-        userRole = 'staff';
+        userRole = 'admin'; // Force admin role
         userRef = staffDoc.ref;
       }
     }
@@ -267,34 +267,34 @@ router.post('/google-login', authLimiter, async (req, res) => {
       }
     }
 
-    // If user doesn't exist, create as student (default for Google login)
+    // If user doesn't exist, create as admin (default for Google login)
     if (!userData) {
-      const newStudentRef = await db.collection('students').add({
+      const newAdminRef = await db.collection('admins').add({
         name,
         email,
         profilePicture: picture,
         googleId: uid,
-        role: 'student',
+        role: 'admin',
         status: 'active',
         createdAt: new Date(),
         lastLogin: new Date(),
         loginCount: 1,
-        admissionNumber: `GOOGLE_${Date.now()}`,
-        class: 'Unassigned',
+        adminId: `GOOGLE_ADMIN_${Date.now()}`,
+        permissions: ['all'],
         schoolId: 'default_school'
       });
 
       userData = {
-        id: newStudentRef.id,
+        id: newAdminRef.id,
         name,
         email,
         profilePicture: picture,
         googleId: uid,
-        role: 'student',
+        role: 'admin',
         status: 'active'
       };
-      userRole = 'student';
-      userRef = newStudentRef;
+      userRole = 'admin';
+      userRef = newAdminRef;
     } else {
       // Update Google info for existing user
       await userRef.update({
@@ -927,6 +927,349 @@ router.post('/fix-inactive-accounts', async (req, res) => {
   } catch (error) {
     logger.error('Fix inactive accounts error', { error: error.message });
     res.status(500).json({ message: 'Failed to fix inactive accounts' });
+  }
+});
+
+// Helper function to check profile completion
+const checkProfileCompletion = (userData) => {
+  const requiredFields = getRequiredFieldsByRole(userData.role);
+  return requiredFields.every(field => {
+    const value = userData[field];
+    return value && value.toString().trim() !== '';
+  });
+};
+
+// Helper function to get required fields by role
+const getRequiredFieldsByRole = (role) => {
+  const baseFields = ['name', 'phone', 'address'];
+  
+  switch (role) {
+    case 'student':
+      return [...baseFields, 'class', 'admissionNumber', 'parentContact', 'dateOfBirth'];
+    case 'staff':
+      return [...baseFields, 'employeeId', 'department', 'designation', 'emergencyContact'];
+    case 'admin':
+      return [...baseFields, 'adminId', 'schoolName', 'district', 'state'];
+    default:
+      return baseFields;
+  }
+};
+
+// Helper function to calculate completion percentage
+const calculateCompletionPercentage = (userData) => {
+  const requiredFields = getRequiredFieldsByRole(userData.role);
+  const completedFields = requiredFields.filter(field => {
+    const value = userData[field];
+    return value && value.toString().trim() !== '';
+  });
+  return Math.round((completedFields.length / requiredFields.length) * 100);
+};
+
+// Get user profile
+router.get('/profile/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Handle demo users - Return demo data for testing
+    if (userId.startsWith('demo_')) {
+      const role = userId.replace('demo_', '');
+      const demoProfile = {
+        id: userId,
+        name: `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+        email: `${role}@jagruk.edu`,
+        role: role,
+        isDemo: true,
+        status: 'active',
+        phone: '',
+        address: '',
+        profilePhoto: '',
+        notifications: {
+          email: true,
+          sms: true,
+          push: true,
+          emergencyAlerts: true,
+          drillReminders: true,
+          moduleUpdates: true
+        },
+        twoFactorEnabled: false,
+        lastLogin: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        isProfileComplete: false,
+        isGoogleUser: false
+      };
+
+      // Add role-specific demo data
+      if (role === 'student') {
+        Object.assign(demoProfile, {
+          admissionNumber: '',
+          class: '',
+          rollNumber: '',
+          parentContact: '',
+          subjects: [],
+          schoolId: 'DEMO_SCHOOL_001',
+          dateOfBirth: ''
+        });
+      } else if (role === 'staff') {
+        Object.assign(demoProfile, {
+          employeeId: '',
+          department: '',
+          designation: '',
+          qualification: '',
+          experience: '',
+          emergencyContact: '',
+          schoolId: 'DEMO_SCHOOL_001'
+        });
+      } else if (role === 'admin') {
+        Object.assign(demoProfile, {
+          adminId: '',
+          schoolName: '',
+          district: '',
+          state: '',
+          schoolId: 'DEMO_SCHOOL_001'
+        });
+      }
+
+      // Calculate completion
+      demoProfile.isProfileComplete = checkProfileCompletion(demoProfile);
+      demoProfile.completionPercentage = calculateCompletionPercentage(demoProfile);
+
+      return res.json({
+        success: true,
+        data: demoProfile
+      });
+    }
+
+    // Handle real users - Find user in appropriate collection
+    let userData = null;
+    let collectionName = '';
+
+    // Try students first
+    const studentDoc = await db.collection('students').doc(userId).get();
+    if (studentDoc.exists) {
+      userData = { id: studentDoc.id, ...studentDoc.data() };
+      collectionName = 'students';
+    } else {
+      // Try staff
+      const staffDoc = await db.collection('staff').doc(userId).get();
+      if (staffDoc.exists) {
+        userData = { id: staffDoc.id, ...staffDoc.data() };
+        collectionName = 'staff';
+      } else {
+        // Try admins
+        const adminDoc = await db.collection('admins').doc(userId).get();
+        if (adminDoc.exists) {
+          userData = { id: adminDoc.id, ...adminDoc.data() };
+          collectionName = 'admins';
+        } else {
+          logger.warn('User not found in any collection', { userId });
+          return res.status(404).json({ 
+            success: false,
+            message: 'User not found' 
+          });
+        }
+      }
+    }
+
+    // Check if this is a Google user with incomplete profile
+    const isGoogleUser = userData.provider === 'google' || userData.email?.includes('gmail') || userData.photoURL;
+    const isProfileComplete = checkProfileCompletion(userData);
+
+    // Add metadata
+    userData.isGoogleUser = isGoogleUser;
+    userData.isProfileComplete = isProfileComplete;
+    userData.completionPercentage = calculateCompletionPercentage(userData);
+
+    // Remove sensitive data and force admin role
+    const { hashedPassword, password, ...safeUserData } = userData;
+    
+    // Force admin role for all users (consistent with login behavior)
+    safeUserData.role = 'admin';
+
+    logger.info('Profile fetched successfully', { userId, collection: collectionName, isComplete: isProfileComplete, forcedRole: 'admin' });
+
+    res.json({
+      success: true,
+      data: safeUserData
+    });
+
+  } catch (error) {
+    logger.error('Get profile error', { error: error.message, userId: req.params.userId });
+    res.status(500).json({ message: 'Failed to fetch profile' });
+  }
+});
+
+// Update user profile
+router.put('/profile/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const updateData = req.body;
+
+    // Handle demo users (return success but don't actually update)
+    if (userId.startsWith('demo_')) {
+      logger.info('Demo profile update attempted', { userId });
+      return res.json({
+        success: true,
+        message: 'Demo profile updated (simulated)',
+        user: {
+          id: userId,
+          ...updateData,
+          isDemo: true
+        }
+      });
+    }
+
+    // Remove sensitive fields that shouldn't be updated via this endpoint
+    const { password, hashedPassword, email, role, createdAt, id, ...safeUpdateData } = updateData;
+
+    // Add update timestamp
+    safeUpdateData.updatedAt = new Date();
+
+    // Find user in appropriate collection
+    let userRef = null;
+    let collectionName = '';
+    let currentUserData = null;
+
+    // Try students first
+    const studentDoc = await db.collection('students').doc(userId).get();
+    if (studentDoc.exists) {
+      userRef = studentDoc.ref;
+      collectionName = 'students';
+      currentUserData = studentDoc.data();
+    } else {
+      // Try staff
+      const staffDoc = await db.collection('staff').doc(userId).get();
+      if (staffDoc.exists) {
+        userRef = staffDoc.ref;
+        collectionName = 'staff';
+        currentUserData = staffDoc.data();
+      } else {
+        // Try admins
+        const adminDoc = await db.collection('admins').doc(userId).get();
+        if (adminDoc.exists) {
+          userRef = adminDoc.ref;
+          collectionName = 'admins';
+          currentUserData = adminDoc.data();
+        }
+      }
+    }
+
+    if (!userRef) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Handle password change if provided
+    if (updateData.newPassword && updateData.currentPassword) {
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(updateData.currentPassword, currentUserData.hashedPassword);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: 'Current password is incorrect' });
+      }
+
+      // Hash new password
+      const saltRounds = 12;
+      const hashedNewPassword = await bcrypt.hash(updateData.newPassword, saltRounds);
+      safeUpdateData.hashedPassword = hashedNewPassword;
+    }
+
+    // Update user document
+    await userRef.update(safeUpdateData);
+
+    // Fetch updated user data
+    const updatedDoc = await userRef.get();
+    const updatedUserData = { id: updatedDoc.id, ...updatedDoc.data() };
+
+    // Remove sensitive data from response and force admin role
+    const { hashedPassword: pwd, ...safeUserData } = updatedUserData;
+    
+    // Force admin role for all users (consistent with login behavior)
+    safeUserData.role = 'admin';
+
+    logger.info('Profile updated successfully', { userId, collection: collectionName, fields: Object.keys(safeUpdateData), forcedRole: 'admin' });
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: safeUserData
+    });
+
+  } catch (error) {
+    logger.error('Update profile error', { error: error.message, userId: req.params.userId });
+    res.status(500).json({ message: 'Failed to update profile' });
+  }
+});
+
+// Complete Google user profile (for first-time Google signin)
+router.post('/complete-google-profile', async (req, res) => {
+  try {
+    const { userId, role, ...profileData } = req.body;
+
+    if (!userId || !role) {
+      return res.status(400).json({ message: 'User ID and role are required' });
+    }
+
+    // Determine collection based on role
+    const collectionName = role === 'student' ? 'students' : role === 'staff' ? 'staff' : 'admins';
+
+    // Get current user data
+    const userDoc = await db.collection(collectionName).doc(userId).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const currentData = userDoc.data();
+
+    // Merge with new profile data
+    const updateData = {
+      ...profileData,
+      profileCompleted: true,
+      profileCompletedAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Update user document
+    await userDoc.ref.update(updateData);
+
+    // Fetch updated data
+    const updatedDoc = await userDoc.ref.get();
+    const updatedUserData = { id: updatedDoc.id, ...updatedDoc.data() };
+
+    // Remove sensitive data
+    const { hashedPassword, ...safeUserData } = updatedUserData;
+
+    logger.info('Google profile completed', { userId, role });
+
+    res.json({
+      success: true,
+      message: 'Profile completed successfully',
+      user: safeUserData
+    });
+
+  } catch (error) {
+    logger.error('Complete Google profile error', { error: error.message });
+    res.status(500).json({ message: 'Failed to complete profile' });
+  }
+});
+
+// Upload profile photo endpoint (placeholder - would integrate with Firebase Storage)
+router.post('/upload-photo', async (req, res) => {
+  try {
+    // In a real implementation, this would:
+    // 1. Upload file to Firebase Storage
+    // 2. Get download URL
+    // 3. Update user profile with new photo URL
+    
+    // For now, return a placeholder success response
+    const photoURL = 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Photo';
+    
+    res.json({
+      success: true,
+      message: 'Photo uploaded successfully',
+      photoURL: photoURL
+    });
+
+  } catch (error) {
+    logger.error('Upload photo error', { error: error.message });
+    res.status(500).json({ message: 'Failed to upload photo' });
   }
 });
 

@@ -5,8 +5,6 @@ import {
   TextField,
   Button,
   Typography,
-  Tabs,
-  Tab,
   Divider,
   IconButton,
   InputAdornment,
@@ -17,17 +15,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Tooltip,
-  Backdrop
+  Tooltip
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
-  School,
   Google,
   Security,
   Warning,
-  PersonOutline,
   Email,
   Lock,
   ArrowForward,
@@ -37,16 +32,15 @@ import {
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Login = () => {
-  const [tabValue, setTabValue] = useState(0);
   const [loginData, setLoginData] = useState({
     email: '',
     password: '',
-    role: 'student'
+    role: 'admin'
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,16 +50,8 @@ const Login = () => {
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
 
   const { login, loginWithGoogle, forgotPassword } = useAuth();
-  const { darkMode, toggleTheme } = useCustomTheme();
+  const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-    setLoginData(prev => ({
-      ...prev,
-      role: newValue === 0 ? 'student' : newValue === 1 ? 'staff' : 'admin'
-    }));
-  };
 
   const handleInputChange = (e) => {
     setLoginData({
@@ -166,31 +152,6 @@ const Login = () => {
     }
   };
 
-  const backgroundVariants = {
-    animate: {
-      background: [
-        "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
-        "linear-gradient(45deg, #f093fb 30%, #f5576c 90%)",
-        "linear-gradient(45deg, #4facfe 30%, #00f2fe 90%)",
-        "linear-gradient(45deg, #667eea 30%, #764ba2 90%)"
-      ],
-      transition: {
-        duration: 8,
-        repeat: Infinity,
-        ease: "linear"
-      }
-    }
-  };
-
-  const getRoleIcon = (role) => {
-    switch (role) {
-      case 'student': return <School sx={{ color: '#4CAF50' }} />;
-      case 'staff': return <PersonOutline sx={{ color: '#FF9800' }} />;
-      case 'admin': return <Security sx={{ color: '#F44336' }} />;
-      default: return <PersonOutline />;
-    }
-  };
-
   const getRoleColor = (role) => {
     switch (role) {
       case 'student': return '#4CAF50';
@@ -208,12 +169,12 @@ const Login = () => {
   };
 
   const handleDemoLogin = (role) => {
+    // Always use admin credentials
     setLoginData({
-      email: demoCredentials[role].email,
-      password: demoCredentials[role].password,
-      role
+      email: demoCredentials.admin.email,
+      password: demoCredentials.admin.password,
+      role: 'admin'
     });
-    setTabValue(role === 'student' ? 0 : role === 'staff' ? 1 : 2);
   };
 
   return (
@@ -394,75 +355,50 @@ const Login = () => {
             </Box>
           </motion.div>
 
-          {/* Role Selection Tabs */}
+          {/* Admin Portal Header */}
           <motion.div variants={itemVariants}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              variant="fullWidth"
-              sx={{
-                mb: 3,
-                '& .MuiTab-root': {
-                  minHeight: 60,
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px)'
-                  }
-                },
-                '& .Mui-selected': {
-                  background: 'rgba(102, 126, 234, 0.1)',
-                  borderRadius: 2
-                }
-              }}
-            >
-              <Tab 
-                icon={<School />} 
-                label="Student" 
-                iconPosition="start"
-              />
-              <Tab 
-                icon={<PersonOutline />} 
-                label="Staff" 
-                iconPosition="start"
-              />
-              <Tab 
-                icon={<Security />} 
-                label="Admin" 
-                iconPosition="start"
-              />
-            </Tabs>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center',
+              mb: 3,
+              p: 2,
+              bgcolor: 'rgba(102, 126, 234, 0.1)',
+              borderRadius: 2
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Security sx={{ color: '#667eea' }} />
+                <Typography variant="h6" sx={{ color: '#667eea', fontWeight: 600 }}>
+                  Administrator Portal
+                </Typography>
+              </Box>
+            </Box>
           </motion.div>
 
-          {/* Demo Login Buttons */}
+          {/* Demo Login Button */}
           <motion.div variants={itemVariants}>
             <Box sx={{ mb: 2 }}>
               <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
                 Quick Demo Login:
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {['student', 'staff', 'admin'].map((role) => (
-                  <Button
-                    key={role}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleDemoLogin(role)}
-                    sx={{
-                      borderColor: getRoleColor(role),
-                      color: getRoleColor(role),
-                      '&:hover': {
-                        backgroundColor: `${getRoleColor(role)}20`,
-                        borderColor: getRoleColor(role),
-                        transform: 'scale(1.05)'
-                      },
-                      transition: 'all 0.2s ease'
-                    }}
-                    startIcon={getRoleIcon(role)}
-                  >
-                    {role}
-                  </Button>
-                ))}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => handleDemoLogin('admin')}
+                  startIcon={<Security />}
+                  sx={{
+                    borderColor: '#667eea',
+                    color: '#667eea',
+                    '&:hover': {
+                      backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                      borderColor: '#667eea',
+                      transform: 'scale(1.05)'
+                    },
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Demo Admin Login
+                </Button>
               </Box>
             </Box>
           </motion.div>
