@@ -373,7 +373,11 @@ export const AuthProvider = ({ children }) => {
         }
       });
       
-      const updatedUser = { ...currentUser, profilePhoto: response.data.photoURL };
+      const updatedUser = { 
+        ...currentUser, 
+        profilePhoto: response.data.photoURL,
+        photoURL: response.data.photoURL  // Ensure both properties are available
+      };
       setCurrentUser(updatedUser);
       
       return { success: true, photoURL: response.data.photoURL };

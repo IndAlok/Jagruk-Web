@@ -5,31 +5,22 @@ import {
   TextField,
   Button,
   Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Tabs,
   Tab,
-  Divider,
   IconButton,
   InputAdornment,
   Alert,
   CircularProgress,
-  Link,
   Grid,
   Stepper,
   Step,
-  StepLabel,
-  Fade,
-  Slide
+  StepLabel
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   School,
   PersonAdd,
-  Google,
   Security,
   Warning,
   ArrowBack,
@@ -49,11 +40,11 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Register = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const tabValue = 2; // Always admin role
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -104,17 +95,10 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const steps = ['Basic Info', 'Additional Details', 'Verification'];
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-    setActiveStep(0);
-    setError('');
-    setSuccess('');
-  };
 
   const getCurrentData = () => {
     switch (tabValue) {
@@ -130,6 +114,7 @@ const Register = () => {
       case 0: setStudentData(data); break;
       case 1: setStaffData(data); break;
       case 2: setAdminData(data); break;
+      default: setAdminData(data); break;
     }
   };
 
@@ -171,7 +156,7 @@ const Register = () => {
 
   const handleSubmit = async () => {
     const currentData = getCurrentData();
-    const role = tabValue === 0 ? 'student' : tabValue === 1 ? 'staff' : 'admin';
+    const role = 'admin';
     
     setLoading(true);
     setError('');
@@ -233,19 +218,19 @@ const Register = () => {
 
   const getTextFieldStyles = () => ({
     '& .MuiOutlinedInput-root': {
-      backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+      backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
       '& fieldset': {
-        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
+        borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
       },
       '&:hover fieldset': {
-        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.87)',
+        borderColor: darkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.87)',
       },
       '&.Mui-focused fieldset': {
         borderColor: getRoleColor(tabValue),
       },
     },
     '& .MuiInputLabel-root': {
-      color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+      color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
     },
     '& .MuiInputLabel-root.Mui-focused': {
       color: getRoleColor(tabValue),
@@ -263,7 +248,7 @@ const Register = () => {
 
   const renderStepContent = () => {
     const currentData = getCurrentData();
-    const role = tabValue === 0 ? 'student' : tabValue === 1 ? 'staff' : 'admin';
+    const role = 'admin';
 
     switch (activeStep) {
       case 0:
@@ -683,9 +668,9 @@ const Register = () => {
               <Paper sx={{ 
                 p: 2, 
                 textAlign: 'left', 
-                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'grey.50',
-                color: isDarkMode ? 'white' : 'inherit',
-                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'grey.50',
+                color: darkMode ? 'white' : 'inherit',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
               }}>
                 <Typography variant="subtitle1" gutterBottom fontWeight="bold">
                   Registration Summary:
@@ -716,32 +701,32 @@ const Register = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: isDarkMode 
+        background: darkMode 
           ? `linear-gradient(135deg, ${getRoleColor(tabValue)}40 0%, ${getRoleColor(tabValue)}20 100%)` 
           : `linear-gradient(135deg, ${getRoleColor(tabValue)}20 0%, ${getRoleColor(tabValue)}10 100%)`,
         position: 'relative',
-        bgcolor: isDarkMode ? 'grey.900' : 'grey.50'
+        bgcolor: darkMode ? 'grey.900' : 'grey.50'
       }}
     >
       {/* Dark Mode Toggle */}
       <IconButton
-        onClick={toggleDarkMode}
+        onClick={toggleTheme}
         sx={{
           position: 'absolute',
           top: 20,
           right: 20,
           zIndex: 1000,
-          bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+          bgcolor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
           backdropFilter: 'blur(10px)',
-          border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+          border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
           '&:hover': {
-            bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+            bgcolor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
             transform: 'scale(1.1)',
           },
           transition: 'all 0.3s ease',
         }}
       >
-        {isDarkMode ? <LightMode /> : <DarkMode />}
+        {darkMode ? <LightMode /> : <DarkMode />}
       </IconButton>
       {/* Animated background elements */}
       <motion.div
@@ -777,14 +762,14 @@ const Register = () => {
             width: { xs: '90vw', sm: 600, md: 700 },
             p: 4,
             borderRadius: 4,
-            background: isDarkMode 
+            background: darkMode 
               ? 'rgba(18, 18, 18, 0.95)' 
               : 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: isDarkMode 
+            border: darkMode 
               ? '1px solid rgba(255, 255, 255, 0.1)' 
               : '1px solid rgba(255, 255, 255, 0.2)',
-            color: isDarkMode ? 'white' : 'inherit'
+            color: darkMode ? 'white' : 'inherit'
           }}
         >
           {/* Header */}
@@ -822,7 +807,6 @@ const Register = () => {
           <motion.div variants={itemVariants}>
             <Tabs
               value={tabValue}
-              onChange={handleTabChange}
               variant="fullWidth"
               sx={{
                 mb: 3,
@@ -835,8 +819,6 @@ const Register = () => {
                 }
               }}
             >
-              <Tab icon={getRoleIcon(0)} label="Student" iconPosition="start" />
-              <Tab icon={getRoleIcon(1)} label="Staff" iconPosition="start" />
               <Tab icon={getRoleIcon(2)} label="Admin" iconPosition="start" />
             </Tabs>
           </motion.div>
