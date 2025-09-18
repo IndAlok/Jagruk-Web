@@ -33,7 +33,6 @@ import {
   Home,
   Class,
   Badge,
-  SupervisorAccount,
   DarkMode,
   LightMode
 } from '@mui/icons-material';
@@ -44,39 +43,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Register = () => {
-  const tabValue = 2; // Always admin role
+  const tabValue = 0; // Always admin role (first and only tab)
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
-  const [studentData, setStudentData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    admissionNumber: '',
-    class: '',
-    age: '',
-    schoolId: '',
-    parentContact: '',
-    address: ''
-  });
-
-  const [staffData, setStaffData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    employeeId: '',
-    department: '',
-    designation: '',
-    phone: '',
-    schoolId: '',
-    address: '',
-    emergencyContact: ''
-  });
-
   const [adminData, setAdminData] = useState({
     name: '',
     email: '',
@@ -101,21 +73,13 @@ const Register = () => {
   const steps = ['Basic Info', 'Additional Details', 'Verification'];
 
   const getCurrentData = () => {
-    switch (tabValue) {
-      case 0: return studentData;
-      case 1: return staffData;
-      case 2: return adminData;
-      default: return studentData;
-    }
+    // Since we only have admin role now, always return adminData
+    return adminData;
   };
 
   const setCurrentData = (data) => {
-    switch (tabValue) {
-      case 0: setStudentData(data); break;
-      case 1: setStaffData(data); break;
-      case 2: setAdminData(data); break;
-      default: setAdminData(data); break;
-    }
+    // Since we only have admin role now, always set adminData
+    setAdminData(data);
   };
 
   const handleInputChange = (e) => {
@@ -208,12 +172,8 @@ const Register = () => {
   };
 
   const getRoleColor = (role) => {
-    switch (role) {
-      case 0: return '#4CAF50'; // Student - Green
-      case 1: return '#FF9800'; // Staff - Orange
-      case 2: return '#F44336'; // Admin - Red
-      default: return '#2196F3';
-    }
+    // Since we only have admin role now, always return admin color
+    return '#F44336'; // Admin - Red
   };
 
   const getTextFieldStyles = () => ({
@@ -238,12 +198,8 @@ const Register = () => {
   });
 
   const getRoleIcon = (role) => {
-    switch (role) {
-      case 0: return <School sx={{ color: getRoleColor(0) }} />;
-      case 1: return <SupervisorAccount sx={{ color: getRoleColor(1) }} />;
-      case 2: return <Security sx={{ color: getRoleColor(2) }} />;
-      default: return <PersonAdd />;
-    }
+    // Since we only have admin role now, always return admin icon
+    return <Security sx={{ color: getRoleColor() }} />;
   };
 
   const renderStepContent = () => {
@@ -819,7 +775,7 @@ const Register = () => {
                 }
               }}
             >
-              <Tab icon={getRoleIcon(2)} label="Admin" iconPosition="start" />
+              <Tab icon={getRoleIcon(0)} label="Admin" iconPosition="start" />
             </Tabs>
           </motion.div>
 
