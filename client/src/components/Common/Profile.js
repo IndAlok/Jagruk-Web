@@ -315,12 +315,7 @@ const Profile = ({ user: passedUser, onClose, onBack }) => {
         setOriginalData({ ...formData });
         setCompletionDialogOpen(false);
         toast.success('Profile updated successfully!');
-        
-        // Update local profile data with the result from the server
-        if (result.user) {
-          setProfileData(result.user);
-          setOriginalData(result.user);
-        }
+        await loadProfileData(); // Refresh data
       }
     } catch (error) {
       console.error('Failed to update profile:', error);

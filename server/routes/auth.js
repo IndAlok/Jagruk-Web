@@ -1079,13 +1079,10 @@ router.get('/profile/:userId', async (req, res) => {
     userData.isProfileComplete = isProfileComplete;
     userData.completionPercentage = calculateCompletionPercentage(userData);
 
-    // Remove sensitive data and force admin role
+    // Remove sensitive data
     const { hashedPassword, password, ...safeUserData } = userData;
-    
-    // Force admin role for all users (consistent with login behavior)
-    safeUserData.role = 'admin';
 
-    logger.info('Profile fetched successfully', { userId, collection: collectionName, isComplete: isProfileComplete, forcedRole: 'admin' });
+    logger.info('Profile fetched successfully', { userId, collection: collectionName, isComplete: isProfileComplete });
 
     res.json({
       success: true,
@@ -1178,13 +1175,10 @@ router.put('/profile/:userId', async (req, res) => {
     const updatedDoc = await userRef.get();
     const updatedUserData = { id: updatedDoc.id, ...updatedDoc.data() };
 
-    // Remove sensitive data from response and force admin role
+    // Remove sensitive data from response
     const { hashedPassword: pwd, ...safeUserData } = updatedUserData;
-    
-    // Force admin role for all users (consistent with login behavior)
-    safeUserData.role = 'admin';
 
-    logger.info('Profile updated successfully', { userId, collection: collectionName, fields: Object.keys(safeUpdateData), forcedRole: 'admin' });
+    logger.info('Profile updated successfully', { userId, collection: collectionName, fields: Object.keys(safeUpdateData) });
 
     res.json({
       success: true,

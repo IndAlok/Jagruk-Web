@@ -236,6 +236,52 @@ export const emergencyAPI = {
   }
 };
 
+// Modules API
+export const modulesAPI = {
+  getAllModules: async () => {
+    const response = await api.get('/api/modules');
+    return response.data;
+  },
+
+  getModuleProgress: async (studentId) => {
+    const response = await api.get(`/api/modules/progress/${studentId}`);
+    return response.data;
+  },
+
+  getStudentProgress: async (studentId) => {
+    const response = await api.get(`/api/modules/student/${studentId}/progress`);
+    return response.data;
+  },
+
+  getAllStudentsProgress: async () => {
+    const response = await api.get('/api/modules/students/progress');
+    return response.data;
+  }
+};
+
+// Drills & Attendance API
+export const drillsAPI = {
+  getAllDrills: async () => {
+    const response = await api.get('/api/drills');
+    return response.data;
+  },
+
+  getStudentAttendance: async (studentId) => {
+    const response = await api.get(`/api/attendance?studentId=${studentId}`);
+    return response.data;
+  },
+
+  getAllStudentsAttendance: async () => {
+    const response = await api.get('/api/attendance/students');
+    return response.data;
+  },
+
+  getAttendanceStats: async () => {
+    const response = await api.get('/api/attendance/stats');
+    return response.data;
+  }
+};
+
 // Analytics API
 export const analyticsAPI = {
   getDashboardMetrics: async (timeRange = '7d') => {

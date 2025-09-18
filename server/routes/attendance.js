@@ -355,4 +355,61 @@ router.get('/export', async (req, res) => {
   }
 });
 
+// Get attendance records for all students (admin view)
+router.get('/students', async (req, res) => {
+  try {
+    const { schoolId, role } = req.user;
+    
+    if (role !== 'admin' && role !== 'staff') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Get all students
+    const studentsSnapshot = await db.collection('students')
+      .where('schoolId', '==', schoolId)
+      .get();
+    
+    const studentsAttendance = [];
+    
+    for (const studentDoc of studentsSnapshot.docs) {
+      const studentData = studentDoc.data();
+      const studentId = studentDoc.id;
+      
+      // Get all drills for the school
+      const drillsSnapshot = await db.collection('drills')
+        .where('schoolId', '==', schoolId)
+        .get();
+      
+      const totalDrills = drillsSnapshot.docs.length;
+      
+      // Get student's attendance records
+      const attendanceSnapshot = await db.collection('attendanceRecords')
+        .where('studentId', '==', studentId)
+        .where('attended', '==', true)
+        .get();
+      
+      const attendedDrills = attendanceSnapshot.docs.length;
+      
+      // Calculate attendance percentage
+      const attendancePercentage = totalDrills > 0 ? Math.round((attendedDrills / totalDrills) * 100) : 0;
+      
+      studentsAttendance.push({
+        studentId,
+        studentName: studentData.name,
+        admissionNumber: studentData.admissionNumber,
+        class: studentData.class,
+        attendedDrills,
+        totalDrills,
+        attendancePercentage
+      });
+    }
+    
+    res.json({ studentsAttendance });
+
+  } catch (error) {
+    logger.error('Get students attendance error:', error);
+    res.status(500).json({ message: 'Failed to fetch students attendance' });
+  }
+});
+
 module.exports = router;

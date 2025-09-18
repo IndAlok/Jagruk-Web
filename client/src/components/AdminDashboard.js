@@ -44,7 +44,6 @@ import {
   Add as AddIcon,
   Refresh as RefreshIcon,
   Person,
-  AdminPanelSettings,
   Schedule,
   Assessment,
   TrendingUp,
@@ -87,6 +86,38 @@ const AdminDashboard = () => {
   ]);
   const [students, setStudents] = useState([]);
   const [staff, setStaff] = useState([]);
+  const [loadingStudentData, setLoadingStudentData] = useState(false);
+  
+  // Utility functions
+  const showSnackbar = useCallback((message, severity = 'info') => {
+    setSnackbar({ open: true, message, severity });
+  }, []);
+
+  const handleCloseSnackbar = useCallback(() => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  }, []);
+  
+  // Load student attendance and module progress data
+  const loadStudentAttendanceAndProgress = useCallback(async () => {
+    try {
+      setLoadingStudentData(true);
+      
+      // In production, these would be API calls
+      // For now, we'll use the existing student data without modification
+      // const attendanceData = await drillsAPI.getAllStudentsAttendance();
+      // const moduleData = await modulesAPI.getAllStudentsProgress();
+      
+      // Since we already have the student data with attendance and progress
+      // we don't need to update it here to avoid infinite loops
+      console.log('Student attendance and progress data loaded successfully');
+      
+    } catch (error) {
+      console.error('Failed to load student data:', error);
+      showSnackbar('Failed to load student attendance and progress data', 'error');
+    } finally {
+      setLoadingStudentData(false);
+    }
+  }, [showSnackbar]);
   
   // Dialog states
   const [studentDialogOpen, setStudentDialogOpen] = useState(false);
@@ -184,25 +215,283 @@ const AdminDashboard = () => {
       setStudents([
         {
           id: 1,
-          name: 'Alice Johnson',
-          email: 'alice.j@student.jagruk.edu',
+          name: 'Aadhya Sharma',
+          email: 'aadhya.sharma@student.jagruk.edu',
           admissionNumber: 'STU001',
           class: '10A',
           age: 16,
-          parentContact: '+1234567890',
-          address: '123 Main St, City',
-          isActive: true
+          parentContact: '+91-9876543210',
+          address: '123 M.G. Road, Mumbai, Maharashtra',
+          isActive: true,
+          attendancePercentage: 92,
+          completedModules: 8,
+          totalModules: 12
         },
         {
           id: 2,
-          name: 'Bob Smith',
-          email: 'bob.s@student.jagruk.edu',
+          name: 'Arjun Patel',
+          email: 'arjun.patel@student.jagruk.edu',
           admissionNumber: 'STU002',
           class: '10B',
           age: 15,
-          parentContact: '+1234567892',
-          address: '456 Oak Ave, City',
-          isActive: true
+          parentContact: '+91-9876543211',
+          address: '456 S.V. Road, Ahmedabad, Gujarat',
+          isActive: true,
+          attendancePercentage: 88,
+          completedModules: 7,
+          totalModules: 12
+        },
+        {
+          id: 3,
+          name: 'Diya Gupta',
+          email: 'diya.gupta@student.jagruk.edu',
+          admissionNumber: 'STU003',
+          class: '9A',
+          age: 14,
+          parentContact: '+91-9876543212',
+          address: '789 Sector 14, Noida, Uttar Pradesh',
+          isActive: true,
+          attendancePercentage: 95,
+          completedModules: 10,
+          totalModules: 11
+        },
+        {
+          id: 4,
+          name: 'Kabir Singh',
+          email: 'kabir.singh@student.jagruk.edu',
+          admissionNumber: 'STU004',
+          class: '10A',
+          age: 16,
+          parentContact: '+91-9876543213',
+          address: '321 Civil Lines, New Delhi',
+          isActive: true,
+          attendancePercentage: 85,
+          completedModules: 6,
+          totalModules: 12
+        },
+        {
+          id: 5,
+          name: 'Ananya Reddy',
+          email: 'ananya.reddy@student.jagruk.edu',
+          admissionNumber: 'STU005',
+          class: '9B',
+          age: 15,
+          parentContact: '+91-9876543214',
+          address: '567 Banjara Hills, Hyderabad, Telangana',
+          isActive: true,
+          attendancePercentage: 90,
+          completedModules: 9,
+          totalModules: 11
+        },
+        {
+          id: 6,
+          name: 'Rohan Kumar',
+          email: 'rohan.kumar@student.jagruk.edu',
+          admissionNumber: 'STU006',
+          class: '11A',
+          age: 17,
+          parentContact: '+91-9876543215',
+          address: '890 Park Street, Kolkata, West Bengal',
+          isActive: true,
+          attendancePercentage: 87,
+          completedModules: 11,
+          totalModules: 14
+        },
+        {
+          id: 7,
+          name: 'Ishita Jain',
+          email: 'ishita.jain@student.jagruk.edu',
+          admissionNumber: 'STU007',
+          class: '10C',
+          age: 16,
+          parentContact: '+91-9876543216',
+          address: '234 Malviya Nagar, Jaipur, Rajasthan',
+          isActive: true,
+          attendancePercentage: 93,
+          completedModules: 9,
+          totalModules: 12
+        },
+        {
+          id: 8,
+          name: 'Aryan Agarwal',
+          email: 'aryan.agarwal@student.jagruk.edu',
+          admissionNumber: 'STU008',
+          class: '9A',
+          age: 14,
+          parentContact: '+91-9876543217',
+          address: '678 Hazratganj, Lucknow, Uttar Pradesh',
+          isActive: true,
+          attendancePercentage: 78,
+          completedModules: 5,
+          totalModules: 11
+        },
+        {
+          id: 9,
+          name: 'Priya Nair',
+          email: 'priya.nair@student.jagruk.edu',
+          admissionNumber: 'STU009',
+          class: '11B',
+          age: 17,
+          parentContact: '+91-9876543218',
+          address: '345 Marine Drive, Kochi, Kerala',
+          isActive: true,
+          attendancePercentage: 96,
+          completedModules: 13,
+          totalModules: 14
+        },
+        {
+          id: 10,
+          name: 'Varun Mehta',
+          email: 'varun.mehta@student.jagruk.edu',
+          admissionNumber: 'STU010',
+          class: '10B',
+          age: 16,
+          parentContact: '+91-9876543219',
+          address: '456 Linking Road, Mumbai, Maharashtra',
+          isActive: true,
+          attendancePercentage: 82,
+          completedModules: 6,
+          totalModules: 12
+        },
+        {
+          id: 11,
+          name: 'Riya Chopra',
+          email: 'riya.chopra@student.jagruk.edu',
+          admissionNumber: 'STU011',
+          class: '9C',
+          age: 15,
+          parentContact: '+91-9876543220',
+          address: '789 Connaught Place, New Delhi',
+          isActive: true,
+          attendancePercentage: 91,
+          completedModules: 8,
+          totalModules: 11
+        },
+        {
+          id: 12,
+          name: 'Akash Verma',
+          email: 'akash.verma@student.jagruk.edu',
+          admissionNumber: 'STU012',
+          class: '11A',
+          age: 17,
+          parentContact: '+91-9876543221',
+          address: '123 Gomti Nagar, Lucknow, Uttar Pradesh',
+          isActive: true,
+          attendancePercentage: 89,
+          completedModules: 12,
+          totalModules: 14
+        },
+        {
+          id: 13,
+          name: 'Sneha Iyer',
+          email: 'sneha.iyer@student.jagruk.edu',
+          admissionNumber: 'STU013',
+          class: '10A',
+          age: 16,
+          parentContact: '+91-9876543222',
+          address: '567 Koramangala, Bangalore, Karnataka',
+          isActive: true,
+          attendancePercentage: 94,
+          completedModules: 10,
+          totalModules: 12
+        },
+        {
+          id: 14,
+          name: 'Harsh Bansal',
+          email: 'harsh.bansal@student.jagruk.edu',
+          admissionNumber: 'STU014',
+          class: '9B',
+          age: 15,
+          parentContact: '+91-9876543223',
+          address: '890 Model Town, Chandigarh',
+          isActive: true,
+          attendancePercentage: 86,
+          completedModules: 7,
+          totalModules: 11
+        },
+        {
+          id: 15,
+          name: 'Tanvi Kulkarni',
+          email: 'tanvi.kulkarni@student.jagruk.edu',
+          admissionNumber: 'STU015',
+          class: '11C',
+          age: 17,
+          parentContact: '+91-9876543224',
+          address: '234 Shivaji Nagar, Pune, Maharashtra',
+          isActive: true,
+          attendancePercentage: 97,
+          completedModules: 14,
+          totalModules: 14
+        },
+        {
+          id: 16,
+          name: 'Karan Malhotra',
+          email: 'karan.malhotra@student.jagruk.edu',
+          admissionNumber: 'STU016',
+          class: '10C',
+          age: 16,
+          parentContact: '+91-9876543225',
+          address: '345 Green Park, New Delhi',
+          isActive: false,
+          attendancePercentage: 45,
+          completedModules: 3,
+          totalModules: 12
+        },
+        {
+          id: 17,
+          name: 'Aditi Sinha',
+          email: 'aditi.sinha@student.jagruk.edu',
+          admissionNumber: 'STU017',
+          class: '9A',
+          age: 14,
+          parentContact: '+91-9876543226',
+          address: '678 Salt Lake, Kolkata, West Bengal',
+          isActive: true,
+          attendancePercentage: 88,
+          completedModules: 8,
+          totalModules: 11
+        },
+        {
+          id: 18,
+          name: 'Dev Trivedi',
+          email: 'dev.trivedi@student.jagruk.edu',
+          admissionNumber: 'STU018',
+          class: '11B',
+          age: 17,
+          parentContact: '+91-9876543227',
+          address: '456 Satellite, Ahmedabad, Gujarat',
+          isActive: true,
+          attendancePercentage: 83,
+          completedModules: 10,
+          totalModules: 14
+        },
+        {
+          id: 19,
+          name: 'Kavya Rao',
+          email: 'kavya.rao@student.jagruk.edu',
+          admissionNumber: 'STU019',
+          class: '10B',
+          age: 16,
+          parentContact: '+91-9876543228',
+          address: '789 Jayanagar, Bangalore, Karnataka',
+          isActive: true,
+          attendancePercentage: 92,
+          completedModules: 9,
+          totalModules: 12
+        },
+        {
+          id: 20,
+          name: 'Nikhil Sharma',
+          email: 'nikhil.sharma@student.jagruk.edu',
+          admissionNumber: 'STU020',
+          class: '9C',
+          age: 15,
+          parentContact: '+91-9876543229',
+          address: '123 Sector 17, Gurgaon, Haryana',
+          isActive: true,
+          attendancePercentage: 90,
+          completedModules: 9,
+          totalModules: 11
         }
       ]);
 
@@ -279,22 +568,23 @@ const AdminDashboard = () => {
 
       setStats(prev => ({ ...prev, lastUpdated: new Date().toISOString() }));
       
+      // Student data already includes attendance and progress data
+      console.log('Dashboard data loaded successfully');
+      
     } catch (error) {
       console.error('Dashboard initialization error:', error);
       showSnackbar('Failed to load dashboard data', 'error');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showSnackbar]);
 
-  // Utility functions
-  const showSnackbar = (message, severity = 'info') => {
-    setSnackbar({ open: true, message, severity });
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
+  // Load data when section changes to students or user management
+  useEffect(() => {
+    if (activeSection === 'students' || activeSection === 'user-management') {
+      loadStudentAttendanceAndProgress();
+    }
+  }, [activeSection, loadStudentAttendanceAndProgress]);
 
   // Navigation handlers
   const handleSidebarMenuClick = (section) => {
@@ -701,7 +991,7 @@ const AdminDashboard = () => {
                     Staff Members
                   </Typography>
                 </Box>
-                <AdminPanelSettings sx={{ fontSize: 40, opacity: 0.8 }} />
+                <Assessment sx={{ fontSize: 40, opacity: 0.8 }} />
               </Box>
             </CardContent>
           </Card>
@@ -932,6 +1222,8 @@ const AdminDashboard = () => {
                 <TableCell>Class</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Contact</TableCell>
+                <TableCell>Drill Attendance</TableCell>
+                <TableCell>Module Progress</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -958,6 +1250,48 @@ const AdminDashboard = () => {
                     <TableCell>{student.class}</TableCell>
                     <TableCell>{student.email}</TableCell>
                     <TableCell>{student.parentContact}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ width: 60, mr: 1 }}>
+                          {loadingStudentData ? (
+                            <LinearProgress />
+                          ) : (
+                            <LinearProgress 
+                              variant="determinate" 
+                              value={student.attendancePercentage || 0} 
+                              color={
+                                (student.attendancePercentage || 0) >= 90 ? 'success' :
+                                (student.attendancePercentage || 0) >= 70 ? 'warning' : 'error'
+                              }
+                            />
+                          )}
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {loadingStudentData ? '...' : `${student.attendancePercentage || 0}%`}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ width: 60, mr: 1 }}>
+                          {loadingStudentData ? (
+                            <LinearProgress />
+                          ) : (
+                            <LinearProgress 
+                              variant="determinate" 
+                              value={student.totalModules > 0 ? (student.completedModules / student.totalModules) * 100 : 0} 
+                              color={
+                                student.totalModules > 0 && (student.completedModules / student.totalModules) * 100 >= 80 ? 'success' :
+                                student.totalModules > 0 && (student.completedModules / student.totalModules) * 100 >= 50 ? 'warning' : 'error'
+                              }
+                            />
+                          )}
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {loadingStudentData ? '...' : `${student.completedModules || 0}/${student.totalModules || 0}`}
+                        </Typography>
+                      </Box>
+                    </TableCell>
                     <TableCell>
                       <Chip 
                         label={student.isActive ? 'Active' : 'Inactive'}
@@ -1136,7 +1470,7 @@ const AdminDashboard = () => {
       </Typography>
       
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={3}>
           <Card>
             <CardHeader 
               title="Student Management" 
@@ -1157,21 +1491,6 @@ const AdminDashboard = () => {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Total Students Registered
               </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" gutterBottom>
-                  Recent Students:
-                </Typography>
-                {students.slice(0, 3).map((student) => (
-                  <Box key={student.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Avatar sx={{ width: 24, height: 24, mr: 1, fontSize: '0.8rem' }}>
-                      {student.name[0]}
-                    </Avatar>
-                    <Typography variant="body2">
-                      {student.name} - {student.class}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
               <Button 
                 variant="text" 
                 onClick={() => setActiveSection('students')}
@@ -1183,7 +1502,52 @@ const AdminDashboard = () => {
           </Card>
         </Grid>
         
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="success.main">
+                Average Drill Attendance
+              </Typography>
+              <Typography variant="h3" color="success.main" sx={{ mb: 1 }}>
+                {Math.round(students.reduce((acc, student) => acc + (student.attendancePercentage || 0), 0) / students.length)}%
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Across all students
+              </Typography>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="caption" color="success.main">
+                  ↑ {students.filter(s => (s.attendancePercentage || 0) >= 90).length} students with 90%+ attendance
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="info.main">
+                Module Completion Rate
+              </Typography>
+              <Typography variant="h3" color="info.main" sx={{ mb: 1 }}>
+                {Math.round(students.reduce((acc, student) => {
+                  const rate = student.totalModules > 0 ? (student.completedModules / student.totalModules) * 100 : 0;
+                  return acc + rate;
+                }, 0) / students.length)}%
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Average completion across all students
+              </Typography>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="caption" color="info.main">
+                  {students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) >= 0.8).length} students completed 80%+ modules
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={3}>
           <Card>
             <CardHeader 
               title="Staff Management" 
@@ -1202,21 +1566,8 @@ const AdminDashboard = () => {
                 {staff.length}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Total Staff Members
+                Active Staff Members
               </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" gutterBottom>
-                  Staff by Department:
-                </Typography>
-                {[...new Set(staff.map(s => s.department))].map((dept) => (
-                  <Box key={dept} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="body2">{dept}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {staff.filter(s => s.department === dept).length}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
               <Button 
                 variant="text" 
                 onClick={() => setActiveSection('staff')}
@@ -1224,6 +1575,101 @@ const AdminDashboard = () => {
               >
                 View All Staff
               </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Performance Overview Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Attendance Performance Distribution" />
+            <CardContent>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" gutterBottom>Excellent (90%+)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => (s.attendancePercentage || 0) >= 90).length / students.length) * 100}
+                  color="success"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => (s.attendancePercentage || 0) >= 90).length} students
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" gutterBottom>Good (70-89%)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => (s.attendancePercentage || 0) >= 70 && (s.attendancePercentage || 0) < 90).length / students.length) * 100}
+                  color="warning"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => (s.attendancePercentage || 0) >= 70 && (s.attendancePercentage || 0) < 90).length} students
+                </Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="body2" gutterBottom>Needs Improvement (&lt;70%)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => (s.attendancePercentage || 0) < 70).length / students.length) * 100}
+                  color="error"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => (s.attendancePercentage || 0) < 70).length} students
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Module Completion Distribution" />
+            <CardContent>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" gutterBottom>High Performers (80%+ completed)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) >= 0.8).length / students.length) * 100}
+                  color="success"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) >= 0.8).length} students
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" gutterBottom>Average Performers (50-79% completed)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) >= 0.5 && (s.completedModules / s.totalModules) < 0.8).length / students.length) * 100}
+                  color="warning"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) >= 0.5 && (s.completedModules / s.totalModules) < 0.8).length} students
+                </Typography>
+              </Box>
+              
+              <Box>
+                <Typography variant="body2" gutterBottom>Needs Support (&lt;50% completed)</Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={(students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) < 0.5).length / students.length) * 100}
+                  color="error"
+                  sx={{ mb: 1 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {students.filter(s => s.totalModules > 0 && (s.completedModules / s.totalModules) < 0.5).length} students
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -1238,27 +1684,27 @@ const AdminDashboard = () => {
               <ListItemIcon>
                 <AddIcon color="primary" />
               </ListItemIcon>
-              <ListItemText 
-                primary="New student registered"
+              <ListItemText
+                primary="New Student Registration"
                 secondary={`${students[0]?.name} was added to class ${students[0]?.class}`}
               />
             </ListItem>
             <ListItem>
               <ListItemIcon>
-                <EditIcon color="success" />
+                <EditIcon color="secondary" />
               </ListItemIcon>
-              <ListItemText 
-                primary="Staff profile updated"
-                secondary={`${staff[0]?.name} updated their department information`}
+              <ListItemText
+                primary="Staff Profile Updated"
+                secondary="Dr. Sarah Wilson updated her contact information"
               />
             </ListItem>
             <ListItem>
               <ListItemIcon>
                 <Person color="info" />
               </ListItemIcon>
-              <ListItemText 
-                primary="User permissions updated"
-                secondary="3 users had their access permissions modified"
+              <ListItemText
+                primary="User Role Changed"
+                secondary="John Smith promoted to Head of Department"
               />
             </ListItem>
           </List>

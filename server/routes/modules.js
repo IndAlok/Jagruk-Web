@@ -317,4 +317,118 @@ router.get('/:moduleId/analytics', async (req, res) => {
   }
 });
 
+// Get all students' module progress for admin dashboard
+router.get('/students/progress', async (req, res) => {
+  try {
+    const { schoolId, role } = req.user;
+    
+    if (role !== 'admin' && role !== 'staff') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Get all students
+    const studentsSnapshot = await db.collection('students')
+      .where('schoolId', '==', schoolId)
+      .get();
+    
+    const studentProgress = [];
+    
+    for (const studentDoc of studentsSnapshot.docs) {
+      const studentData = studentDoc.data();
+      const studentId = studentDoc.id;
+      
+      // Get student's module progress
+      const progressSnapshot = await db.collection('studentProgress')
+        .where('studentId', '==', studentId)
+        .where('type', '==', 'module')
+        .get();
+      
+      const completedModules = progressSnapshot.docs.filter(doc => 
+        doc.data().status === 'completed'
+      ).length;
+      
+      const totalModulesSnapshot = await db.collection('modules').get();
+      const totalModules = totalModulesSnapshot.docs.length;
+      
+      studentProgress.push({
+        studentId,
+        studentName: studentData.name,
+        admissionNumber: studentData.admissionNumber,
+        class: studentData.class,
+        completedModules,
+        totalModules,
+        progressPercentage: totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0
+      });
+    }
+    
+    res.json({ studentsProgress: studentProgress });
+
+  } catch (error) {
+    logger.error('Get students module progress error:', error);
+    res.status(500).json({ message: 'Failed to fetch students module progress' });
+  }
+});
+
+// Get specific student's detailed module progress
+router.get('/student/:studentId/progress', async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { schoolId } = req.user;
+    
+    // Verify student exists and belongs to school
+    const studentDoc = await db.collection('students').doc(studentId).get();
+    if (!studentDoc.exists || studentDoc.data().schoolId !== schoolId) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    
+    // Get all modules
+    const modulesSnapshot = await db.collection('modules').get();
+    const allModules = modulesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Get student's progress for each module
+    const progressSnapshot = await db.collection('studentProgress')
+      .where('studentId', '==', studentId)
+      .where('type', '==', 'module')
+      .get();
+    
+    const progressMap = {};
+    progressSnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      progressMap[data.moduleId] = data;
+    });
+    
+    const moduleProgress = allModules.map(module => ({
+      ...module,
+      progress: progressMap[module.id] || { 
+        status: 'not_started', 
+        completionPercentage: 0,
+        startedAt: null,
+        completedAt: null
+      }
+    }));
+    
+    const completedCount = moduleProgress.filter(m => m.progress.status === 'completed').length;
+    
+    res.json({
+      studentId,
+      studentName: studentDoc.data().name,
+      modules: moduleProgress,
+      summary: {
+        total: allModules.length,
+        completed: completedCount,
+        inProgress: moduleProgress.filter(m => m.progress.status === 'in_progress').length,
+        notStarted: moduleProgress.filter(m => m.progress.status === 'not_started').length,
+        completionPercentage: allModules.length > 0 ? Math.round((completedCount / allModules.length) * 100) : 0
+      }
+    });
+    
+  } catch (error) {
+    logger.error('Get student module progress error:', error);
+    res.status(500).json({ message: 'Failed to fetch student module progress' });
+  }
+});
+
 module.exports = router;

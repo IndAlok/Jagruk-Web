@@ -118,7 +118,7 @@ const ProfileSidebar = ({
 
             <IconButton color="inherit" onClick={onProfileMenuOpen}>
               <Avatar 
-                src={user?.profilePhoto || user?.photoURL} 
+                src={user?.photoURL} 
                 alt={user?.displayName || user?.name || 'Profile'}
                 sx={{ 
                   width: 32, 
