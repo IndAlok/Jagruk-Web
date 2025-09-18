@@ -1,4 +1,4 @@
-# 🚨 Jagruk - Advanced Disaster Management & Safety Education System
+# 🚨 Jagruk - Disaster Management & Safety Education System
 
 [![Smart India Hackathon 2025](https://img.shields.io/badge/SIH_2025-Problem_ID_25008-FF6B35.svg?style=for-the-badge)](https://sih.gov.in)
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -8,296 +8,359 @@
 
 ## 🎯 Project Overview
 
-**Jagruk** is a comprehensive, real-time disaster preparedness and response education system designed specifically for Indian schools and colleges. Built with modern web technologies, it provides an integrated platform for disaster education, emergency drill management, and crisis response coordination.
+**Jagruk** is a comprehensive disaster preparedness and response education system designed for Indian schools and colleges. Built with modern React.js and Firebase, it provides role-based dashboards for disaster education management and emergency response coordination.
 
 ### 🏆 Smart India Hackathon 2025 Solution
 - **Problem Statement ID**: 25008
-- **Theme**: Disaster Management
+- **Theme**: Disaster Management  
 - **Ministry**: Government of Punjab, Department of Higher Education
 - **Challenge**: Disaster Preparedness and Response Education System for Schools and Colleges
 
-## ✨ Key Features & Capabilities
+## ✨ Current Implementation
 
-### 👨‍🎓 For Students
-- 🔐 **Multi-Auth System** - Email/Password, Google OAuth, and demo accounts
-- � **Complete Profile Management** - Comprehensive profile system with Google OAuth integration
-- �📚 **Interactive Learning Modules** - Earthquake, Fire, Flood, Cyclone education
-- 🏠 **Virtual Home Drills** - Step-by-step guided safety procedures
-- 📱 **Real-time Emergency Alerts** - Instant notifications and instructions
-- 🎮 **Gamified Experience** - Progress tracking, badges, and achievements
-- 📊 **Personal Dashboard** - Learning progress and drill participation history
-- 🌙 **Dark/Light Theme** - Adaptive UI with smooth transitions
+### � Authentication System
+- **Multi-Authentication Support**:
+  - Email/Password registration and login
+  - Google OAuth integration with automatic profile creation
+  - Demo account system for testing (Admin, Staff, Student)
+- **Role-Based Access Control**:
+  - Automatic dashboard routing based on user role
+  - Secure route protection with role validation
+  - Permission-based feature access
 
-### 👩‍🏫 For Staff & Teachers  
-- 👥 **Advanced Student Management** - Complete student lifecycle management
-- 👤 **Staff Profile System** - Comprehensive staff information management
-- 📅 **Smart Drill Scheduling** - Automated and manual drill coordination
-- 📈 **Real-time Analytics** - Class-wise participation and progress reports
-- 🚨 **Emergency Broadcasting** - Instant alert system with multi-channel delivery
-- 📋 **Module Assignment** - Customized learning paths for different classes
-- 🎯 **Performance Insights** - Individual and collective progress monitoring
+### 👨‍💼 Admin Dashboard
+- **Comprehensive Admin Interface** with real-time statistics
+- **Student Management System** - Add, edit, delete, and track student records
+- **Staff Management System** - Complete staff administration
+- **User Management** - Role-based user administration
+- **Security & Drills Management** - Emergency drill coordination
+- **Analytics Dashboard** - Data visualization and reporting
+- **Settings & Configuration** - System-wide preferences
+- **Dark/Light Theme Toggle** - Adaptive UI with smooth transitions
 
-### 👨‍💼 For Administrators
-- 🏗️ **Comprehensive Admin Dashboard** - Real-time system overview and statistics
-- 👤 **Admin Profile Management** - Complete administrative profile system
-- 🔧 **System Configuration** - Theme settings, notification preferences, and system parameters
-- 📊 **Advanced Analytics** - Detailed reports and data visualization
-- 🛡️ **Security Management** - User roles, permissions, and access control
-- 🔔 **Notification Center** - System alerts and communication management
-- 📱 **Mobile-Responsive Interface** - Full functionality across all devices
+### �‍🏫 Staff Dashboard  
+- **Staff-Specific Interface** with assigned student tracking
+- **Student Management** - View and manage assigned students
+- **Notification System** - Drill schedules, attendance updates
+- **Profile Management** - Complete staff profile system
+- **Theme Customization** - Dark/light mode support
 
-## 👤 Profile Management System
+### 👨‍🎓 Student Dashboard
+- **Personalized Learning Interface** with progress tracking
+- **Course Management** - Access to assigned learning modules
+- **Notification Center** - Emergency alerts and course updates
+- **Profile System** - Complete student profile management
+- **Interactive UI** - Modern, responsive design with animations
 
-### ✨ Complete Profile Experience
-- **📝 Role-Based Forms** - Customized profile fields based on user role (Student/Staff/Admin)
-- **🔗 Google OAuth Integration** - Seamless profile completion for Google sign-in users
-- **📸 Photo Upload** - Profile photo management with placeholder support
-- **🔒 Security Settings** - Password management and two-factor authentication
-- **📱 Notification Preferences** - Granular control over alert types and delivery methods
-- **✏️ Edit & Update** - Real-time profile editing with validation
-- **📊 Progress Tracking** - Profile completion status for Google users
+### 👤 Universal Profile Management
+- **Role-Based Profile Forms** - Customized fields for Admin/Staff/Student
+- **Google OAuth Integration** - Automatic profile pre-filling for Google users
+- **Profile Completion Flow** - Guided profile setup for new users
+- **Security Settings** - Password management and preferences
+- **Photo Upload Support** - Profile picture management
+- **Real-Time Updates** - Live profile editing with validation
 
-### 🎯 Role-Specific Features
+### 🎨 Modern UI/UX Features
+- **Unified ProfileSidebar Component** - Consistent navigation across all roles
+- **NotificationCenter** - Real-time notification management
+- **Dark/Light Theme System** - Global theme switching with persistence
+- **Responsive Design** - Mobile-first approach with Material-UI
+- **Smooth Animations** - Framer Motion integration for enhanced UX
+- **Loading States** - Professional loading screens and skeletons
 
-#### Students
-- Admission Number, Class, Roll Number
-- Parent Contact Information
-- Subject Preferences
-- Academic Progress Integration
+## 🏗️ Technology Stack
 
-#### Staff
-- Employee ID, Department, Designation
-- Qualification and Experience
-- Emergency Contact Details
-- Teaching Subjects and Classes
-
-#### Admins
-- Administrative ID and School Details
-- District and State Information
-- School Management Preferences
-- System Configuration Access
-
-## 🏗️ Technology Architecture
-
-### Frontend Stack
+### Frontend Architecture
 ```
-React 18.2.0          - Modern functional components with hooks
-Material-UI 5.11.10   - Professional UI component library
-Framer Motion 10.18.0 - Smooth animations and micro-interactions
-React Router 6.30.1   - Advanced routing with nested routes
-Socket.IO Client      - Real-time bidirectional communication
-Axios 1.3.4           - HTTP client with interceptors
-React Toastify        - Beautiful notification system
-Recharts 2.5.0        - Interactive data visualization
+React 18.2.0              - Modern functional components with hooks
+Material-UI 5.11.10       - Professional UI component library  
+Framer Motion 10.18.0     - Smooth animations and transitions
+React Router 6.30.1       - Advanced routing with nested routes
+Axios 1.3.4               - HTTP client for API communication
+React Toastify            - Toast notification system
 ```
 
 ### Backend Infrastructure
 ```
-Node.js 18.x          - High-performance JavaScript runtime
-Express.js 4.18.2     - Robust web application framework
-Firebase Admin 11.5.0 - Authentication and database management
-Socket.IO 4.6.1       - Real-time event-driven architecture
-JWT 9.0.0             - Secure token-based authentication
-Winston 3.8.2         - Advanced logging and monitoring
-Nodemailer 6.9.1      - Email notification system
-Express Rate Limit    - API security and rate limiting
+Node.js 18.x              - High-performance JavaScript runtime
+Express.js 4.18.2         - Web application framework
+Firebase Admin 11.5.0     - Authentication and database management
+JWT 9.0.0                 - Secure token-based authentication
+Winston 3.8.2             - Advanced logging system
 ```
 
-### Database & Storage
+### Database & Authentication
 ```
-Firebase Firestore    - NoSQL document database with real-time sync
-Firebase Auth         - Secure user authentication and management
-Firebase Storage      - File uploads and media management
-Real-time Sync        - Live data updates across all clients
+Firebase Firestore        - NoSQL document database
+Firebase Authentication   - User authentication and management
+Firebase Storage          - File uploads and media management
 ```
-
-## 📁 Project Structure
+## 📁 Current Project Structure
 
 ```
 Jagruk-Web/
 ├── 📂 client/                          # React Frontend Application
-│   ├── 📂 public/                      # Static assets
+│   ├── 📂 public/                      # Static assets and PWA config
 │   │   ├── index.html                  # Main HTML template
 │   │   ├── manifest.json               # PWA configuration
-│   │   └── favicon.ico                 # App icon
+│   │   └── favicon.ico                 # Application icon
 │   ├── 📂 src/                         # Source code
 │   │   ├── 📂 components/              # React Components
 │   │   │   ├── 📂 Auth/                # Authentication components
-│   │   │   │   ├── Login.js            # Advanced login with demo accounts
-│   │   │   │   └── Register.js         # Multi-role registration system
 │   │   │   ├── 📂 Common/              # Shared components
-│   │   │   │   └── LoadingScreen.js    # Animated loading screens
-│   │   │   ├── 📂 Dashboard/           # Dashboard components
-│   │   │   │   ├── AdminDashboard.js   # Comprehensive admin interface
-│   │   │   │   ├── ModernAdminDashboard.js # Enhanced admin features
-│   │   │   │   ├── StudentDashboard.js # Student learning interface
-│   │   │   │   ├── StaffDashboard.js   # Staff management interface
-│   │   │   │   ├── SecurityDrills.js   # Drill management system
-│   │   │   │   └── UserManagement.js   # User administration
+│   │   │   │   ├── LoadingScreen.js    # Loading animations
+│   │   │   │   ├── Profile.js          # Universal profile management
+│   │   │   │   ├── ProfileSidebar.js   # Unified navigation sidebar
+│   │   │   │   └── NotificationCenter.js # Notification system
+│   │   │   ├── 📂 Dashboard/           # Role-specific dashboards
+│   │   │   │   ├── AdminDashboard.js   # Enhanced admin interface
+│   │   │   │   └── ModernAdminDashboard.js # Alternative admin UI
 │   │   │   ├── AdminDashboard.js       # Main admin component
+│   │   │   ├── StaffDashboard.js       # Staff management interface
+│   │   │   ├── StudentDashboard.js     # Student learning interface
 │   │   │   ├── Login.js                # Authentication interface
-│   │   │   ├── ProtectedRoute.js       # Route protection
-│   │   │   ├── Register.js             # User registration
-│   │   │   ├── StaffDashboard.js       # Staff interface
-│   │   │   └── StudentDashboard.js     # Student interface
+│   │   │   ├── Register.js             # Admin-only registration
+│   │   │   └── ProtectedRoute.js       # Route security
 │   │   ├── 📂 contexts/                # React Context Providers
-│   │   │   ├── AuthContext.js          # Authentication state management
-│   │   │   ├── SocketContext.js        # Real-time communication
-│   │   │   └── ThemeContext.js         # Theme and UI state management
+│   │   │   ├── AuthContext.js          # Authentication & user management
+│   │   │   └── ThemeContext.js         # Theme and UI state
 │   │   ├── 📂 services/                # API and external services
-│   │   │   └── api.js                  # Comprehensive API client
+│   │   │   └── api.js                  # Centralized API client
 │   │   ├── 📂 config/                  # Configuration files
-│   │   │   └── firebase.js             # Firebase client configuration
+│   │   │   └── firebase.js             # Firebase client setup
 │   │   ├── App.js                      # Main application component
-│   │   ├── index.js                    # React application entry point
+│   │   ├── index.js                    # React entry point
 │   │   └── index.css                   # Global styles
-│   ├── package.json                    # Frontend dependencies
-│   └── 📂 build/                       # Production build output
-├── 📂 server/                          # Node.js Backend Application
+│   └── package.json                    # Frontend dependencies
+├── 📂 server/                          # Node.js Backend Application  
 │   ├── 📂 config/                      # Server configuration
-│   │   ├── firebase.js                 # Firebase Admin SDK setup
-│   │   └── logger.js                   # Winston logging configuration
+│   │   ├── firebase.js                 # Firebase Admin SDK
+│   │   └── logger.js                   # Winston logging setup
 │   ├── 📂 middleware/                  # Express middleware
 │   │   ├── auth.js                     # Authentication middleware
-│   │   ├── rateLimiter.js             # API rate limiting
-│   │   └── validation.js               # Input validation middleware
-│   ├── 📂 routes/                      # API route handlers
+│   │   ├── rateLimiter.js             # Rate limiting protection
+│   │   └── validation.js               # Input validation
+│   ├── 📂 routes/                      # API endpoints
+│   │   ├── auth.js                     # Authentication routes
+│   │   ├── dashboard.js                # Dashboard data API
 │   │   ├── admin.js                    # Admin-specific endpoints
-│   │   ├── alerts.js                   # Emergency alert system
-│   │   ├── attendance.js               # Drill attendance tracking
-│   │   ├── auth.js                     # Authentication endpoints
-│   │   ├── dashboard.js                # Dashboard data endpoints
-│   │   ├── drills.js                   # Drill management API
-│   │   ├── modules.js                  # Learning module API
-│   │   ├── settings.js                 # System configuration API
-│   │   ├── student.js                  # Student-specific endpoints
-│   │   └── students.js                 # Student management API
+│   │   ├── students.js                 # Student management API
+│   │   ├── drills.js                   # Emergency drill API
+│   │   ├── alerts.js                   # Alert system API
+│   │   └── settings.js                 # Configuration API
 │   ├── 📂 functions/                   # Firebase Cloud Functions
-│   │   ├── src/                        # TypeScript source code
-│   │   ├── package.json                # Cloud Functions dependencies
-│   │   └── tsconfig.json               # TypeScript configuration
-│   ├── 📂 dataconnect/                 # Firebase Data Connect
-│   │   ├── dataconnect.yaml           # Data Connect configuration
-│   │   ├── schema/                     # Database schema definitions
-│   │   └── example/                    # Example queries and connectors
+│   │   └── src/                        # TypeScript source code
 │   ├── 📂 logs/                        # Application logs
-│   │   ├── combined.log                # All application logs
+│   │   ├── combined.log                # All logs
 │   │   └── error.log                   # Error-specific logs
 │   ├── index.js                        # Server entry point
 │   ├── package.json                    # Backend dependencies
 │   ├── firestore.rules                # Database security rules
-│   └── firestore.indexes.json         # Database index definitions
-├── 📄 firebase.json                    # Firebase project configuration
-├── 📄 package.json                     # Root project configuration
-├── 📄 README.md                        # Project documentation
+│   └── firestore.indexes.json         # Database indexing
+├── 📄 firebase.json                    # Firebase project config
+├── 📄 package.json                     # Root project config
+├── 📄 README.md                        # This documentation
 ├── 📄 LICENSE                          # MIT License
-├── 📄 ENVIRONMENT_SETUP.md            # Environment setup guide
-├── 📄 FIREBASE_SETUP_GUIDE.md         # Firebase configuration guide
-├── 📄 DETAILED_ENV_GUIDE.md           # Detailed environment variables
-├── 📄 QUICK_START.md                  # Quick start instructions
-└── 🚀 start.bat / start.ps1           # Platform-specific startup scripts
+└── 🚀 start.bat / start.ps1           # Quick start scripts
 ```
 
-## 🚀 Quick Start Guide
+## 🚀 Installation & Setup
 
 ### Prerequisites
 - **Node.js** 18.x or later
-- **npm** 8.x or later  
+- **npm** 8.x or later
 - **Git** for version control
-- **Firebase Account** with Firestore and Auth enabled
+- **Firebase Account** with project created
 
-### 1. Clone & Setup
+### 1. Clone Repository
 ```bash
-# Clone the repository
 git clone https://github.com/IndAlok/Jagruk-Web.git
 cd Jagruk-Web
+```
 
-# Install all dependencies (frontend + backend)
+### 2. Install Dependencies
+```bash
+# Install all dependencies (both client and server)
 npm install
 ```
 
-### 2. Firebase Configuration
+### 3. Firebase Configuration
 
 #### Create Firebase Project
 1. Visit [Firebase Console](https://console.firebase.google.com)
 2. Create new project: `jagruk-disaster-management`
-3. Enable Google Analytics (recommended)
+3. Enable Authentication (Email/Password and Google)
+4. Create Firestore database in production mode
 
-#### Enable Authentication
-```bash
-# Enable the following sign-in methods:
-# - Email/Password ✓
-# - Google ✓
-# - Anonymous (optional)
-```
+#### Environment Setup
 
-#### Setup Firestore Database
-```bash
-# Create Firestore database in production mode
-# Choose location closest to your target users
-# Apply provided security rules from firestore.rules
-```
-
-### 3. Environment Variables
-
-#### Server Configuration (`server/.env`)
+**Server Environment** (`server/.env`):
 ```env
 # Server Configuration
 PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:3000
 
-# Firebase Admin SDK Configuration
-FIREBASE_PROJECT_ID=your-firebase-project-id
-FIREBASE_PRIVATE_KEY_ID=your-private-key-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project-id.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=your-client-id
-FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
-FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
-FIREBASE_DATABASE_URL=https://your-project-id-default-rtdb.firebaseio.com
+# Firebase Admin SDK (Get from Firebase Console > Service Accounts)
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Private Key\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com
 
-# Security Configuration
-JWT_SECRET=your-ultra-secure-jwt-secret-key-minimum-32-characters
+# Security
+JWT_SECRET=your-secure-jwt-secret-32-characters-minimum
 JWT_EXPIRES_IN=24h
-BCRYPT_ROUNDS=12
 
-# Email Service Configuration (for notifications)
+# Optional: Email Configuration
 EMAIL_SERVICE=gmail
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-specific-password
-
-# Rate Limiting Configuration
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-
-# Logging Configuration
-LOG_LEVEL=info
-LOG_FILE=logs/combined.log
-ERROR_LOG_FILE=logs/error.log
+EMAIL_PASSWORD=your-app-password
 ```
 
-#### Client Configuration (`client/.env`)
+**Client Environment** (`client/.env`):
 ```env
 # API Configuration
 REACT_APP_API_URL=http://localhost:5000
-REACT_APP_SOCKET_URL=http://localhost:5000
 
-# Firebase Web SDK Configuration
+# Firebase Web Configuration (Get from Firebase Console > Project Settings)
 REACT_APP_FIREBASE_API_KEY=your-web-api-key
-REACT_APP_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 REACT_APP_FIREBASE_PROJECT_ID=your-project-id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 REACT_APP_FIREBASE_APP_ID=your-app-id
-REACT_APP_FIREBASE_MEASUREMENT_ID=your-measurement-id
 
-# Application Configuration
+# Application Info
 REACT_APP_APP_NAME=Jagruk
 REACT_APP_VERSION=1.0.0
-REACT_APP_ENVIRONMENT=development
+```
+```
+
+### 4. Run Application
+```bash
+# Start both client and server concurrently
+npm start
+
+# Or run individually:
+npm run server  # Starts backend on http://localhost:5000
+npm run client  # Starts frontend on http://localhost:3000
+```
+
+## 🔐 Demo Accounts
+
+For testing purposes, use these demo credentials:
+
+### Admin Demo
+- **Email**: `admin@demo.jagruk.com`
+- **Password**: `admin123`
+- **Features**: Full admin dashboard access
+
+### Staff Demo  
+- **Email**: `staff@demo.jagruk.com`
+- **Password**: `staff123`
+- **Features**: Staff management interface
+
+### Student Demo
+- **Email**: `student@demo.jagruk.com` 
+- **Password**: `student123`
+- **Features**: Student learning interface
+
+## 🛠️ Development Features
+
+### Current Implementation Status
+- ✅ **Authentication System** - Multi-provider login with role-based access
+- ✅ **Admin Dashboard** - Complete administrative interface
+- ✅ **Staff Dashboard** - Staff management and student tracking
+- ✅ **Student Dashboard** - Learning interface with notifications
+- ✅ **Profile Management** - Universal profile system with Google OAuth
+- ✅ **Theme System** - Dark/light mode with persistence
+- ✅ **Navigation** - Unified sidebar with role-specific menus
+- ✅ **Responsive Design** - Mobile-first UI with Material-UI
+- ✅ **Security** - JWT authentication with role-based permissions
+- ✅ **API Integration** - RESTful backend with Firebase integration
+
+### Planned Enhancements
+- 🔄 **Learning Modules** - Interactive disaster education content
+- 🔄 **Emergency Drills** - Virtual drill simulations and tracking
+- 🔄 **Real-time Alerts** - Emergency notification broadcast system
+- 🔄 **Analytics Dashboard** - Advanced reporting and data visualization
+- 🔄 **Mobile App** - React Native companion application
+
+## 📋 API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration (admin-only)
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/profile/:id` - Get user profile
+- `PUT /api/auth/profile/:id` - Update user profile
+
+### Dashboard
+- `GET /api/dashboard/admin/stats` - Admin statistics
+- `GET /api/dashboard/admin/activities` - Recent activities
+- `GET /api/dashboard/staff/stats` - Staff statistics
+- `GET /api/dashboard/student/stats` - Student statistics
+
+### User Management
+- `GET /api/admin/students` - Get all students
+- `POST /api/admin/students` - Create student
+- `PUT /api/admin/students/:id` - Update student
+- `DELETE /api/admin/students/:id` - Delete student
+
+## 🔧 Configuration
+
+### Firebase Security Rules (Firestore)
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Admin-only collections
+    match /{collection}/{document} {
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
+```
+
+### Environment Variables Reference
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `FIREBASE_PROJECT_ID` | Firebase project identifier | ✅ |
+| `FIREBASE_PRIVATE_KEY` | Firebase service account key | ✅ |
+| `JWT_SECRET` | JWT signing secret (32+ chars) | ✅ |
+| `EMAIL_SERVICE` | Email service provider | ❌ |
+| `NODE_ENV` | Environment mode | ❌ |
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** feature branch (`git checkout -b feature/new-feature`)
+3. **Commit** changes (`git commit -am 'Add new feature'`)
+4. **Push** to branch (`git push origin feature/new-feature`)
+5. **Create** Pull Request
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+## 🏆 Smart India Hackathon 2025
+
+This project is developed as a solution for **Smart India Hackathon 2025**, addressing the critical need for disaster preparedness education in educational institutions across India.
+
+**Problem Statement ID**: 25008  
+**Ministry**: Government of Punjab, Department of Higher Education  
+**Theme**: Disaster Management & Safety Education
+
+---
+
+<p align="center">
+  <strong>🚨 Jagruk - Building Disaster-Ready Communities Through Education 🚨</strong>
+</p>
 
 # Feature Flags
 REACT_APP_ENABLE_ANALYTICS=true
