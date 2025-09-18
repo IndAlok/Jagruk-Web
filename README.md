@@ -20,14 +20,10 @@
 
 ### � Authentication System
 - **Demo-Based Authentication**:
-  - Pre-configured demo accounts for all user roles
-  - Email/Password login system with hardcoded demo credentials  
+  - Pre-configured demo account
+  - Email/Password login system with hardcoded demo credential(s)  
   - Google OAuth integration (configured, using demo fallback)
   - JWT token-based session management
-- **Role-Based Access Control**:
-  - Automatic dashboard routing based on user role (admin/staff/student)
-  - Protected route system with authentication middleware
-  - Permission-based UI component rendering
 
 ### 👨‍💼 Admin Dashboard (Fully Implemented)
 - **Comprehensive Admin Interface** with mock data visualization
@@ -38,22 +34,6 @@
 - **User Analytics** - Data visualization with charts and progress tracking
 - **Responsive Navigation** - ProfileSidebar with role-based menu options
 - **Theme System** - Dark/light mode toggle with persistent storage
-
-### �‍🏫 Staff Dashboard  
-- **Staff-Specific Interface** with basic dashboard statistics
-- **Student Overview** - View assigned students (placeholder functionality)
-- **Notification Display** - Alert system with mock notifications
-- **Quick Actions** - Feature placeholders with "coming soon" notifications
-- **Profile Management** - Universal profile system integration
-- **Responsive Design** - Mobile-optimized interface with Material-UI
-
-### 👨‍🎓 Student Dashboard (Basic Implementation)
-- **Personalized Learning Interface** with progress visualization
-- **Mock Course Management** - Demo learning module data display
-- **Notification Center** - Sample emergency alerts and course updates
-- **Profile System** - Universal profile management integration
-- **Progress Tracking** - Mock completion statistics and attendance data
-- **Interactive UI** - Modern, responsive design with smooth animations
 
 ### 👤 Universal Profile Management (Fully Implemented)
 - **Google OAuth Integration** - Profile pre-filling from Google account data
@@ -275,18 +255,6 @@ For testing the current implementation, use these demo credentials:
 - **Password**: `admin123`
 - **Features**: Complete admin dashboard with all management functions
 
-### Staff Demo (Basic Features)  
-- **Email**: `staff@jagruk.edu`
-- **Password**: `staff123`
-- **Features**: Basic staff interface with placeholder functionality
-
-### Student Demo (Basic Features)
-- **Email**: `student@jagruk.edu` 
-- **Password**: `student123`
-- **Features**: Student dashboard with mock progress data
-
-**Note**: All demo accounts route to admin-level functionality in the current implementation.
-
 ## 🛠️ Development Features
 
 ### ✅ Fully Implemented Features
@@ -299,8 +267,6 @@ For testing the current implementation, use these demo credentials:
 - **API Architecture** - Express.js backend with organized route structure
 
 ### 🔄 Basic Implementation (UI Complete, Using Mock Data)
-- **Staff Dashboard** - Basic interface with placeholder functionality
-- **Student Dashboard** - Learning interface with mock progress tracking
 - **Drill Management** - UI complete with demo drill scheduling
 - **User Management** - CRUD operations on hardcoded demo data
 - **Notification System** - Toast notifications and mock alert displays
