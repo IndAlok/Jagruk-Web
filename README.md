@@ -56,7 +56,6 @@
 - **Interactive UI** - Modern, responsive design with smooth animations
 
 ### 👤 Universal Profile Management (Fully Implemented)
-- **Role-Based Profile Forms** - Dynamic form fields based on user role (Admin/Staff/Student)
 - **Google OAuth Integration** - Profile pre-filling from Google account data
 - **Profile Completion Flow** - Guided multi-step profile setup for new users
 - **Demo Profile Support** - Mock profile data for demo accounts
@@ -65,7 +64,7 @@
 - **Real-Time Updates** - Live profile editing with form validation
 
 ### 🎨 Modern UI/UX Features
-- **Unified ProfileSidebar Component** - Consistent navigation across all roles
+- **Unified ProfileSidebar Component** - Consistent navigation across all pages
 - **NotificationCenter** - Real-time notification management
 - **Dark/Light Theme System** - Global theme switching with persistence
 - **Responsive Design** - Mobile-first approach with Material-UI
@@ -75,7 +74,6 @@
 ### 📊 Current Data Implementation
 - **Demo Data System** - Comprehensive mock data for development and testing
 - **In-Memory Storage** - Local state management for demo student/staff/drill records
-- **Hardcoded Demo Accounts** - Pre-configured users (admin@jagruk.edu, staff@jagruk.edu, student@jagruk.edu)
 - **Mock API Responses** - Server routes returning realistic demo data
 - **Firebase Ready** - Database configuration complete for future migration to real data
 - **JWT Authentication** - Token-based auth system with demo user validation
@@ -352,12 +350,10 @@ For testing the current implementation, use these demo credentials:
 ### Current Development Setup
 The project is configured to run with mock data for development and testing:
 
-**Demo Credentials (server/routes/auth.js)**:
+**Demo Credential(s) (server/routes/auth.js)**:
 ```javascript
 const demoCredentials = {
   'admin@jagruk.edu': { password: 'admin123', role: 'admin', name: 'Demo Admin' },
-  'staff@jagruk.edu': { password: 'staff123', role: 'admin', name: 'Demo Staff (Admin)' },
-  'student@jagruk.edu': { password: 'student123', role: 'admin', name: 'Demo Student (Admin)' }
 };
 ```
 
@@ -437,16 +433,8 @@ npm run build
 
 ## 🎮 Demo Accounts & Testing
 
-### Quick Login Credentials
+### Quick Login Credential(s)
 ```javascript
-// Student Account
-Email: student@jagruk.edu
-Password: student123
-
-// Staff Account  
-Email: staff@jagruk.edu
-Password: staff123
-
 // Admin Account
 Email: admin@jagruk.edu
 Password: admin123
