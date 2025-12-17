@@ -12,17 +12,21 @@
     "install-server": "cd server && npm install",
     "postinstall": "npm run install-client && npm run install-server"
   },
-  "dependencies": {
-    "concurrently": "^7.6.0"
-  },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nodemon": "^2.0.20"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/IndAlok/Jagruk-Web.git"
   },
-  "keywords": ["disaster-management", "education", "react", "firebase", "smart-india-hackathon"],
+  "keywords": [
+    "disaster-management",
+    "education",
+    "react",
+    "firebase",
+    "smart-india-hackathon"
+  ],
   "author": "IndAlok",
   "license": "MIT"
 }

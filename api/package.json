@@ -1,0 +1,11 @@
+{
+  "name": "jagruk-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "bcryptjs": "^2.4.3",
+    "firebase-admin": "^11.5.0",
+    "jsonwebtoken": "^9.0.0"
+  }
+}

@@ -1,621 +1,214 @@
-// Import the standardized auth middleware
 const express = require('express');
 const { db } = require('../config/firebase');
-const { authenticateToken, authorizeAll } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const logger = require('../config/logger');
 
 const router = express.Router();
 
-// Demo endpoints (no authentication required) - add these first
-router.get('/demo/stats', (req, res) => {
-  const stats = {
-    totalStudents: 1250,
-    activeDrills: 3,
-    systemHealth: 98,
-    totalAlerts: 5,
-    modulesCompleted: 320,
-    attendanceRate: 94.5,
-    emergencyReadiness: 87.2,
-    staffMembers: 45
-  };
-
-  res.json({
-    success: true,
-    data: stats
-  });
-});
-
-router.get('/demo/activities', (req, res) => {
-  const activities = [
-    {
-      id: 1,
-      type: 'info',
-      title: 'System Health Check',
-      message: 'System health check completed - All systems operational',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      severity: 'info'
-    },
-    {
-      id: 2,
-      type: 'success',
-      title: 'Fire Drill Completed',
-      message: 'Fire drill completed successfully - 98% participation',
-      timestamp: new Date(Date.now() - 75 * 60 * 1000).toISOString(),
-      severity: 'success'
-    },
-    {
-      id: 3,
-      type: 'warning',
-      title: 'Database Backup',
-      message: 'Student database backup initiated',
-      timestamp: new Date(Date.now() - 105 * 60 * 1000).toISOString(),
-      severity: 'warning'
-    },
-    {
-      id: 4,
-      type: 'info',
-      title: 'New Registrations',
-      message: 'New student registration: 3 students added',
-      timestamp: new Date(Date.now() - 150 * 60 * 1000).toISOString(),
-      severity: 'info'
-    }
-  ];
-
-  res.json({
-    success: true,
-    data: activities
-  });
-});
-
-router.get('/demo/alerts', (req, res) => {
-  const alerts = [
-    {
-      id: 1,
-      type: 'Fire Drill',
-      message: 'Scheduled fire drill at 2:30 PM today',
-      severity: 'warning',
-      timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-      isActive: true,
-      acknowledged: false
-    },
-    {
-      id: 2,
-      type: 'Weather Alert',
-      message: 'Heavy rain warning issued for next 2 hours',
-      severity: 'info',
-      timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      acknowledged: false
-    },
-    {
-      id: 3,
-      type: 'System Update',
-      message: 'Emergency response system updated successfully',
-      severity: 'success',
-      timestamp: new Date(Date.now() - 120 * 60 * 1000).toISOString(),
-      isActive: false,
-      acknowledged: true
-    }
-  ];
-
-  res.json({
-    success: true,
-    data: alerts
-  });
-});
-
-// Apply authentication to all other routes
-router.use(authenticateToken);
-router.use(authorizeAll);
-
-// Get comprehensive dashboard data
-router.get('/', async (req, res) => {
+router.get('/stats', authenticateToken, async (req, res) => {
   try {
-    const { uid, schoolId, role } = req.user;
-    
-    if (role === 'student') {
-      // Student dashboard
-      const dashboardData = await getStudentDashboard(uid, schoolId);
-      res.json(dashboardData);
-    } else {
-      // Admin/Staff dashboard
-      const dashboardData = await getAdminDashboard(schoolId);
-      res.json(dashboardData);
-    }
+    const [studentsSnap, staffSnap, drillsSnap, alertsSnap, modulesSnap] = await Promise.all([
+      db.collection('students').get(),
+      db.collection('staff').get(),
+      db.collection('drills').get(),
+      db.collection('alerts').where('isActive', '==', true).get(),
+      db.collection('modules').get()
+    ]);
 
-  } catch (error) {
-    logger.error('Get dashboard data error:', error);
-    res.status(500).json({ message: 'Failed to fetch dashboard data' });
-  }
-});
+    let completedDrills = 0;
+    let scheduledDrills = 0;
+    let totalAttendance = 0;
+    let drillCount = 0;
 
-// Get real-time statistics
-router.get('/stats/realtime', async (req, res) => {
-  try {
-    const { schoolId, role } = req.user;
-    
-    if (role !== 'admin' && role !== 'staff') {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-    
-    // Get current active drills
-    const activeDrillsSnapshot = await db.collection('drills')
-      .where('schoolId', '==', schoolId)
-      .where('status', '==', 'active')
-      .get();
-    
-    const activeDrills = activeDrillsSnapshot.docs.map(doc => {
-      const data = doc.data();
-      const attendanceCount = Object.values(data.attendance || {}).filter(Boolean).length;
-      const totalParticipants = data.participants.length;
-      const currentRate = totalParticipants > 0 ? 
-        ((attendanceCount / totalParticipants) * 100).toFixed(1) : 0;
-      
-      return {
-        id: doc.id,
-        title: data.title,
-        type: data.type,
-        startedAt: data.startedAt,
-        attendanceCount,
-        totalParticipants,
-        currentAttendanceRate: currentRate
-      };
+    drillsSnap.forEach(doc => {
+      const drill = doc.data();
+      if (drill.status === 'completed') {
+        completedDrills++;
+        totalAttendance += drill.participantCount || 0;
+        drillCount++;
+      } else if (drill.status === 'scheduled') {
+        scheduledDrills++;
+      }
     });
-    
-    // Get active alerts count
-    const activeAlertsSnapshot = await db.collection('alerts')
-      .where('schoolId', '==', schoolId)
-      .where('isActive', '==', true)
-      .get();
-    
-    const activeAlertsCount = activeAlertsSnapshot.size;
-    
-    // Get recent activity
-    const recentActivitySnapshot = await db.collection('attendanceRecords')
-      .where('schoolId', '==', schoolId)
-      .where('markedAt', '>=', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-      .orderBy('markedAt', 'desc')
-      .limit(10)
-      .get();
-    
-    const recentActivity = [];
-    for (const doc of recentActivitySnapshot.docs) {
-      const record = doc.data();
-      const studentDoc = await db.collection('students').doc(record.studentId).get();
-      const drillDoc = await db.collection('drills').doc(record.drillId).get();
-      
-      recentActivity.push({
-        id: doc.id,
-        studentName: studentDoc.exists ? studentDoc.data().name : 'Unknown',
-        drillTitle: drillDoc.exists ? drillDoc.data().title : 'Unknown',
-        timestamp: record.markedAt
-      });
-    }
-    
+
+    const avgAttendance = drillCount > 0 ? Math.round(totalAttendance / drillCount) : 0;
+
+    let totalProgress = 0;
+    let studentCount = 0;
+    studentsSnap.forEach(doc => {
+      const student = doc.data();
+      const progress = student.moduleProgress || {};
+      const completedModules = Object.values(progress).filter(p => p.completed).length;
+      totalProgress += (completedModules / Math.max(modulesSnap.size, 1)) * 100;
+      studentCount++;
+    });
+
+    const avgModuleCompletion = studentCount > 0 ? Math.round(totalProgress / studentCount) : 0;
+
     res.json({
-      activeDrills,
-      activeAlertsCount,
-      recentActivity,
-      lastUpdated: new Date().toISOString()
+      success: true,
+      stats: {
+        totalStudents: studentsSnap.size,
+        totalStaff: staffSnap.size,
+        totalDrills: drillsSnap.size,
+        completedDrills,
+        scheduledDrills,
+        activeAlerts: alertsSnap.size,
+        totalModules: modulesSnap.size,
+        avgDrillAttendance: avgAttendance,
+        avgModuleCompletion,
+        systemHealth: 98,
+        lastUpdated: new Date().toISOString()
+      }
     });
 
   } catch (error) {
-    logger.error('Get realtime stats error:', error);
-    res.status(500).json({ message: 'Failed to fetch realtime statistics' });
+    logger.error('Get dashboard stats error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch stats' });
   }
 });
 
-// Get analytics data
-router.get('/analytics', async (req, res) => {
+router.get('/activities', authenticateToken, async (req, res) => {
   try {
-    const { schoolId, role } = req.user;
-    const { period = '30', type = 'overview' } = req.query;
+    const activities = [];
     
-    if (role !== 'admin' && role !== 'staff') {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-    
-    const startDate = new Date(Date.now() - parseInt(period) * 24 * 60 * 60 * 1000).toISOString();
-    
-    let analyticsData = {};
-    
-    switch (type) {
-      case 'attendance':
-        analyticsData = await getAttendanceAnalytics(schoolId, startDate);
-        break;
-      case 'modules':
-        analyticsData = await getModuleAnalytics(schoolId, startDate);
-        break;
-      case 'drills':
-        analyticsData = await getDrillAnalytics(schoolId, startDate);
-        break;
-      case 'alerts':
-        analyticsData = await getAlertAnalytics(schoolId, startDate);
-        break;
-      default:
-        analyticsData = await getOverviewAnalytics(schoolId, startDate);
-    }
-    
-    res.json(analyticsData);
-
-  } catch (error) {
-    logger.error('Get analytics data error:', error);
-    res.status(500).json({ message: 'Failed to fetch analytics data' });
-  }
-});
-
-// Helper functions
-async function getStudentDashboard(studentId, schoolId) {
-  try {
-    const studentDoc = await db.collection('students').doc(studentId).get();
-    const studentData = studentDoc.data();
-    
-    // Get upcoming drills
-    const now = new Date().toISOString();
-    const upcomingDrillsSnapshot = await db.collection('drills')
-      .where('schoolId', '==', schoolId)
-      .where('participants', 'array-contains', studentId)
-      .where('status', 'in', ['scheduled', 'active'])
-      .where('scheduledDate', '>=', now)
-      .orderBy('scheduledDate')
-      .limit(5)
-      .get();
-    
-    const upcomingDrills = upcomingDrillsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      title: doc.data().title,
-      type: doc.data().type,
-      scheduledDate: doc.data().scheduledDate,
-      status: doc.data().status
-    }));
-    
-    // Get recent alerts
-    const recentAlertsSnapshot = await db.collection('alerts')
-      .where('schoolId', '==', schoolId)
-      .where('isActive', '==', true)
+    const drillsSnap = await db.collection('drills')
       .orderBy('createdAt', 'desc')
       .limit(5)
       .get();
     
-    const recentAlerts = recentAlertsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    // Get module progress
-    const moduleProgress = studentData.moduleProgress || {};
-    const completedModules = Object.values(moduleProgress).filter(p => p.completed).length;
-    
-    // Get all modules for completion rate
-    const modulesSnapshot = await db.collection('modules').where('isActive', '==', true).get();
-    const totalModules = modulesSnapshot.size;
-    const completionRate = totalModules > 0 ? ((completedModules / totalModules) * 100).toFixed(1) : 0;
-    
-    // Get recommended modules
-    const recommendedModules = await getRecommendedModules(studentId, moduleProgress);
-    
-    return {
-      student: {
-        name: studentData.name,
-        class: studentData.class,
-        admissionNumber: studentData.admissionNumber
-      },
-      stats: {
-        completedModules,
-        totalModules,
-        completionRate,
-        drillsAttended: studentData.drillsAttended || 0
-      },
-      upcomingDrills,
-      recentAlerts,
-      recommendedModules,
-      lastUpdated: new Date().toISOString()
-    };
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getAdminDashboard(schoolId) {
-  try {
-    // Get basic counts
-    const [studentsSnapshot, staffSnapshot, drillsSnapshot, alertsSnapshot] = await Promise.all([
-      db.collection('students').where('schoolId', '==', schoolId).where('isActive', '==', true).get(),
-      db.collection('staff').where('schoolId', '==', schoolId).where('isActive', '==', true).get(),
-      db.collection('drills').where('schoolId', '==', schoolId).get(),
-      db.collection('alerts').where('schoolId', '==', schoolId).where('isActive', '==', true).get()
-    ]);
-    
-    const totalStudents = studentsSnapshot.size;
-    const totalStaff = staffSnapshot.size;
-    const totalDrills = drillsSnapshot.size;
-    const activeAlerts = alertsSnapshot.size;
-    
-    // Calculate average attendance
-    const completedDrills = drillsSnapshot.docs.filter(doc => doc.data().status === 'completed');
-    const avgAttendance = completedDrills.length > 0 ? 
-      completedDrills.reduce((sum, doc) => sum + (doc.data().completionRate || 0), 0) / completedDrills.length :
-      0;
-    
-    // Get students by class distribution
-    const studentsByClass = {};
-    studentsSnapshot.docs.forEach(doc => {
-      const studentClass = doc.data().class;
-      studentsByClass[studentClass] = (studentsByClass[studentClass] || 0) + 1;
-    });
-    
-    // Get recent drills
-    const recentDrills = drillsSnapshot.docs
-      .sort((a, b) => new Date(b.data().scheduledDate) - new Date(a.data().scheduledDate))
-      .slice(0, 5)
-      .map(doc => ({
+    drillsSnap.forEach(doc => {
+      const drill = doc.data();
+      activities.push({
         id: doc.id,
-        title: doc.data().title,
-        type: doc.data().type,
-        status: doc.data().status,
-        scheduledDate: doc.data().scheduledDate,
-        completionRate: doc.data().completionRate
-      }));
-    
-    // Get recent activity
-    const recentActivitySnapshot = await db.collection('attendanceRecords')
-      .where('schoolId', '==', schoolId)
-      .where('markedAt', '>=', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-      .orderBy('markedAt', 'desc')
-      .limit(10)
+        type: 'drill',
+        title: drill.title,
+        message: `Drill ${drill.status}: ${drill.title}`,
+        timestamp: drill.createdAt,
+        severity: drill.status === 'completed' ? 'success' : 'info'
+      });
+    });
+
+    const alertsSnap = await db.collection('alerts')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
       .get();
     
-    const recentActivity = [];
-    for (const doc of recentActivitySnapshot.docs) {
-      const record = doc.data();
-      const studentDoc = await db.collection('students').doc(record.studentId).get();
-      
-      recentActivity.push({
+    alertsSnap.forEach(doc => {
+      const alert = doc.data();
+      activities.push({
         id: doc.id,
-        studentName: studentDoc.exists ? studentDoc.data().name : 'Unknown',
-        action: 'marked_attendance',
-        timestamp: record.markedAt
+        type: 'alert',
+        title: alert.title,
+        message: alert.message,
+        timestamp: alert.createdAt,
+        severity: alert.priority === 'high' ? 'warning' : 'info'
       });
-    }
-    
-    return {
-      stats: {
-        totalStudents,
-        totalStaff,
-        totalDrills,
-        activeAlerts,
-        avgAttendance: avgAttendance.toFixed(1)
-      },
-      distributions: {
-        studentsByClass
-      },
-      recentDrills,
-      recentActivity,
-      lastUpdated: new Date().toISOString()
-    };
+    });
+
+    activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    res.json({
+      success: true,
+      activities: activities.slice(0, 10)
+    });
+
   } catch (error) {
-    throw error;
+    logger.error('Get activities error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch activities' });
   }
-}
+});
 
-async function getRecommendedModules(studentId, moduleProgress) {
+router.get('/upcoming-drills', authenticateToken, async (req, res) => {
   try {
-    const modulesSnapshot = await db.collection('modules').where('isActive', '==', true).get();
-    const allModules = modulesSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const now = new Date().toISOString();
     
-    // Find incomplete modules
-    const incompleteModules = allModules.filter(module => 
-      !moduleProgress[module.id] || !moduleProgress[module.id].completed
-    );
+    const snapshot = await db.collection('drills')
+      .where('status', '==', 'scheduled')
+      .orderBy('scheduledDate', 'asc')
+      .limit(5)
+      .get();
     
-    return incompleteModules.slice(0, 3);
+    let drills = [];
+    snapshot.forEach(doc => {
+      drills.push({ id: doc.id, ...doc.data() });
+    });
+
+    res.json({ success: true, data: drills });
+
   } catch (error) {
-    return [];
+    logger.error('Get upcoming drills error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch upcoming drills' });
   }
-}
+});
 
-async function getOverviewAnalytics(schoolId, startDate) {
-  // Implementation for overview analytics
-  return {
-    type: 'overview',
-    period: 'last_30_days',
-    data: {
-      totalActivities: 0,
-      completionTrend: [],
-      categoryDistribution: {}
-    }
-  };
-}
-
-async function getAttendanceAnalytics(schoolId, startDate) {
-  // Implementation for attendance analytics
-  return {
-    type: 'attendance',
-    period: startDate,
-    data: {
-      attendanceTrend: [],
-      classWiseAttendance: {},
-      drillTypeAttendance: {}
-    }
-  };
-}
-
-async function getModuleAnalytics(schoolId, startDate) {
-  // Implementation for module analytics
-  return {
-    type: 'modules',
-    period: startDate,
-    data: {
-      completionTrend: [],
-      popularModules: [],
-      difficultyDistribution: {}
-    }
-  };
-}
-
-async function getDrillAnalytics(schoolId, startDate) {
-  // Implementation for drill analytics
-  return {
-    type: 'drills',
-    period: startDate,
-    data: {
-      drillFrequency: [],
-      typeDistribution: {},
-      effectivenessScores: {}
-    }
-  };
-}
-
-// Get admin statistics - what the frontend expects
-router.get('/admin/stats', authenticateToken, async (req, res) => {
+router.get('/student/:id', authenticateToken, async (req, res) => {
   try {
-    // For demo users, return mock data with some variation
-    if (req.user.isDemo || req.user.uid?.startsWith('demo_')) {
-      logger.info('Serving demo stats for admin dashboard', { uid: req.user.uid });
-      
-      const baseStats = {
-        totalStudents: Math.floor(Math.random() * 500) + 1000,
-        totalStaff: Math.floor(Math.random() * 50) + 50,
-        activeDrills: Math.floor(Math.random() * 5) + 1,
-        systemHealth: Math.floor(Math.random() * 10) + 90,
-        completedDrills: Math.floor(Math.random() * 100) + 200,
-        pendingAlerts: Math.floor(Math.random() * 10),
-        responseTime: `${(Math.random() * 2 + 1).toFixed(1)}s`,
-        participationRate: Math.floor(Math.random() * 20) + 80,
-        lastUpdated: new Date().toISOString()
-      };
+    const { id } = req.params;
 
-      return res.json({
-        success: true,
-        stats: baseStats
+    const studentDoc = await db.collection('students').doc(id).get();
+    
+    if (!studentDoc.exists) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    const student = studentDoc.data();
+    const moduleProgress = student.moduleProgress || {};
+
+    const modulesSnap = await db.collection('modules').get();
+    let completedModules = 0;
+    let totalPoints = 0;
+
+    modulesSnap.forEach(doc => {
+      if (moduleProgress[doc.id]?.completed) {
+        completedModules++;
+        totalPoints += doc.data().points || 0;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        drillsAttended: student.drillsAttended || 0,
+        modulesCompleted: completedModules,
+        totalModules: modulesSnap.size,
+        totalPoints: student.totalPoints || 0,
+        rank: 1,
+        recentActivity: []
+      }
+    });
+
+  } catch (error) {
+    logger.error('Get student dashboard error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch student dashboard' });
+  }
+});
+
+router.get('/leaderboard', authenticateToken, async (req, res) => {
+  try {
+    const snapshot = await db.collection('students').orderBy('totalPoints', 'desc').limit(10).get();
+    
+    let leaderboard = [];
+    let rank = 1;
+    
+    snapshot.forEach(doc => {
+      const student = doc.data();
+      leaderboard.push({
+        rank: rank++,
+        id: doc.id,
+        name: student.name,
+        points: student.totalPoints || 0,
+        class: student.class,
+        drillsAttended: student.drillsAttended || 0
       });
-    }
-
-    logger.info('Fetching real admin stats', { uid: req.user.uid });
-
-    // For real users, fetch from database
-    const stats = {
-      totalStudents: 1248,
-      totalStaff: 86,
-      activeDrills: 3,
-      systemHealth: 98,
-      completedDrills: 45,
-      pendingAlerts: 2,
-      responseTime: '1.8s',
-      participationRate: 95.2,
-      lastUpdated: new Date().toISOString()
-    };
-
-    res.json({
-      success: true,
-      stats
     });
 
+    res.json({ success: true, data: leaderboard });
+
   } catch (error) {
-    console.error('Dashboard stats error:', error);
-    res.status(500).json({ message: 'Failed to fetch dashboard stats' });
+    logger.error('Get leaderboard error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch leaderboard' });
   }
 });
-
-// Get recent activities
-router.get('/admin/activities', authenticateToken, async (req, res) => {
-  try {
-    logger.info('Fetching admin activities', { uid: req.user.uid, isDemo: req.user.isDemo });
-    
-    const activities = [
-      {
-        id: 1,
-        type: 'drill_completed',
-        title: 'Fire Drill Completed',
-        description: 'All students evacuated successfully',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        status: 'success'
-      },
-      {
-        id: 2,
-        type: 'user_registered',
-        title: 'New Student Registration',
-        description: 'John Doe registered for Grade 10A',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        status: 'info'
-      },
-      {
-        id: 3,
-        type: 'system_update',
-        title: 'System Maintenance',
-        description: 'Scheduled maintenance completed',
-        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-        status: 'warning'
-      }
-    ];
-
-    res.json({
-      success: true,
-      activities
-    });
-  } catch (error) {
-    console.error('Activities fetch error:', error);
-    res.status(500).json({ message: 'Failed to fetch activities' });
-  }
-});
-
-// Get notifications for dashboard
-router.get('/notifications', authenticateToken, async (req, res) => {
-  try {
-    logger.info('Fetching notifications', { uid: req.user.uid, role: req.user.role });
-    
-    // Mock notifications data
-    const notifications = [
-      {
-        id: 1,
-        type: 'info',
-        title: 'System Update',
-        message: 'New security features have been added to the platform',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        read: false
-      },
-      {
-        id: 2,
-        type: 'success',
-        title: 'Drill Completed',
-        message: 'Fire safety drill completed successfully with 98% participation',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        read: true
-      },
-      {
-        id: 3,
-        type: 'warning',
-        title: 'Maintenance Scheduled',
-        message: 'System maintenance is scheduled for tonight from 11 PM to 1 AM',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        read: false
-      }
-    ];
-
-    res.json({
-      success: true,
-      notifications
-    });
-  } catch (error) {
-    logger.error('Error fetching notifications:', error);
-    res.status(500).json({ message: 'Failed to fetch notifications' });
-  }
-});
-
-async function getAlertAnalytics(schoolId, startDate) {
-  // Implementation for alert analytics
-  return {
-    type: 'alerts',
-    period: startDate,
-    data: {
-      alertFrequency: [],
-      priorityDistribution: {},
-      responseTime: {}
-    }
-  };
-}
 
 module.exports = router;

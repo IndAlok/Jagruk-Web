@@ -80,17 +80,6 @@ const ProfileSidebar = ({
   const options = menuOptions[role] || menuOptions.student;
   const currentDarkMode = darkMode !== undefined ? darkMode : globalDarkMode;
 
-  // Debug: Log user data to see what's available
-  React.useEffect(() => {
-    console.log('ProfileSidebar user data:', {
-      user,
-      photoURL: user?.photoURL,
-      profilePhoto: user?.profilePhoto,
-      displayName: user?.displayName,
-      name: user?.name
-    });
-  }, [user]);
-
   return (
     <>
       <AppBar 

@@ -79,11 +79,7 @@ const AdminDashboard = () => {
     pendingAlerts: 2
   });
   const [activities, setActivities] = useState([]);
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'System Alert', message: 'New security drill scheduled', read: false, type: 'info' },
-    { id: 2, title: 'Student Update', message: '5 new student registrations', read: false, type: 'success' },
-    { id: 3, title: 'Staff Alert', message: 'Monthly report due tomorrow', read: true, type: 'warning' }
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const [students, setStudents] = useState([]);
   const [staff, setStaff] = useState([]);
   const [loadingStudentData, setLoadingStudentData] = useState(false);
@@ -201,16 +197,7 @@ const AdminDashboard = () => {
         }
       ]);
 
-      setNotifications([
-        {
-          id: 1,
-          type: 'info',
-          title: 'System Update',
-          message: 'New security features available',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          read: false
-        }
-      ]);
+      setNotifications([]);
 
       setStudents([
         {

@@ -1,35 +1,22 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: 30000,
+  headers: { 'Content-Type': 'application/json' }
 });
 
-// Add request interceptor to include auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// Add response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  response => response,
+  error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -39,301 +26,180 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
 export const authAPI = {
   login: async (credentials) => {
-    try {
-      const response = await api.post('/api/auth/login', credentials);
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (error) {
-      throw error;
+    const response = await api.post('/api/auth/login', credentials);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+    return response.data;
   },
-
-  logout: async () => {
-    try {
-      await api.post('/api/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-  },
-
   register: async (userData) => {
     const response = await api.post('/api/auth/register', userData);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
     return response.data;
   },
-
-  forgotPassword: async (email) => {
-    const response = await api.post('/api/auth/forgot-password', { email });
-    return response.data;
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   },
-
-  resetPassword: async (token, password) => {
-    const response = await api.post('/api/auth/reset-password', { token, password });
-    return response.data;
-  },
-
   verifyToken: async () => {
-    const response = await api.get('/api/auth/verify');
+    const response = await api.post('/api/auth/verify');
+    return response.data;
+  },
+  googleLogin: async (idToken, role) => {
+    const response = await api.post('/api/auth/google-login', { idToken, role });
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
     return response.data;
   }
 };
 
-// Dashboard API
 export const dashboardAPI = {
-  getAdminStats: async () => {
-    const response = await api.get('/api/dashboard/admin/stats');
-    return response.data;
-  },
-
   getStats: async () => {
-    const response = await api.get('/api/dashboard/demo/stats');
+    const response = await api.get('/api/dashboard/stats');
     return response.data;
   },
-
   getActivities: async () => {
-    const response = await api.get('/api/dashboard/admin/activities');
+    const response = await api.get('/api/dashboard/activities');
     return response.data;
   },
-
-  getNotifications: async () => {
-    const response = await api.get('/api/dashboard/notifications');
-    return response.data;
-  },
-
-  markNotificationRead: async (notificationId) => {
-    const response = await api.patch(`/api/dashboard/notifications/${notificationId}/read`);
+  getLeaderboard: async () => {
+    const response = await api.get('/api/dashboard/leaderboard');
     return response.data;
   }
 };
 
-// User Management API
-export const userAPI = {
-  getUsers: async (filters = {}) => {
-    const response = await api.get('/api/users', { params: filters });
+export const studentsAPI = {
+  getAll: async (params = {}) => {
+    const response = await api.get('/api/students', { params });
     return response.data;
   },
-
-  createUser: async (userData) => {
-    const response = await api.post('/api/users', userData);
+  getById: async (id) => {
+    const response = await api.get(`/api/students/${id}`);
     return response.data;
   },
-
-  updateUser: async (userId, userData) => {
-    const response = await api.put(`/api/users/${userId}`, userData);
+  create: async (data) => {
+    const response = await api.post('/api/students', data);
     return response.data;
   },
-
-  deleteUser: async (userId) => {
-    const response = await api.delete(`/api/users/${userId}`);
+  update: async (id, data) => {
+    const response = await api.put(`/api/students/${id}`, data);
     return response.data;
   },
-
-  getUserProfile: async () => {
-    const response = await api.get('/api/users/profile');
-    return response.data;
-  },
-
-  updateUserProfile: async (profileData) => {
-    const response = await api.put('/api/users/profile', profileData);
+  delete: async (id) => {
+    const response = await api.delete(`/api/students/${id}`);
     return response.data;
   }
 };
 
-// Security API
-export const securityAPI = {
-  getDrills: async () => {
-    const response = await api.get('/api/security/drills');
-    return response.data;
-  },
-
-  createDrill: async (drillData) => {
-    const response = await api.post('/api/security/drills', drillData);
-    return response.data;
-  },
-
-  updateDrill: async (drillId, drillData) => {
-    const response = await api.put(`/api/security/drills/${drillId}`, drillData);
-    return response.data;
-  },
-
-  deleteDrill: async (drillId) => {
-    const response = await api.delete(`/api/security/drills/${drillId}`);
-    return response.data;
-  },
-
-  triggerDrill: async (drillId) => {
-    const response = await api.post(`/api/security/drills/${drillId}/trigger`);
-    return response.data;
-  },
-
-  getIncidents: async () => {
-    const response = await api.get('/api/security/incidents');
-    return response.data;
-  },
-
-  reportIncident: async (incidentData) => {
-    const response = await api.post('/api/security/incidents', incidentData);
-    return response.data;
-  }
-};
-
-// Settings API
-export const settingsAPI = {
-  getSettings: async () => {
-    const response = await api.get('/api/settings');
-    return response.data;
-  },
-
-  updateSettings: async (settings) => {
-    const response = await api.put('/api/settings', settings);
-    return response.data;
-  },
-
-  resetSettings: async () => {
-    const response = await api.post('/api/settings/reset');
-    return response.data;
-  },
-
-  updateNotificationSettings: async (notificationSettings) => {
-    const response = await api.put('/api/settings/notifications', notificationSettings);
-    return response.data;
-  },
-
-  updateSecuritySettings: async (securitySettings) => {
-    const response = await api.put('/api/settings/security', securitySettings);
-    return response.data;
-  }
-};
-
-// Emergency API
-export const emergencyAPI = {
-  triggerAlert: async (alertType, data = {}) => {
-    const response = await api.post('/api/emergency/alert', { type: alertType, ...data });
-    return response.data;
-  },
-
-  getEmergencyContacts: async () => {
-    const response = await api.get('/api/emergency/contacts');
-    return response.data;
-  },
-
-  updateEmergencyContacts: async (contacts) => {
-    const response = await api.put('/api/emergency/contacts', { contacts });
-    return response.data;
-  },
-
-  getAlertHistory: async () => {
-    const response = await api.get('/api/emergency/alerts/history');
-    return response.data;
-  }
-};
-
-// Modules API
-export const modulesAPI = {
-  getAllModules: async () => {
-    const response = await api.get('/api/modules');
-    return response.data;
-  },
-
-  getModuleProgress: async (studentId) => {
-    const response = await api.get(`/api/modules/progress/${studentId}`);
-    return response.data;
-  },
-
-  getStudentProgress: async (studentId) => {
-    const response = await api.get(`/api/modules/student/${studentId}/progress`);
-    return response.data;
-  },
-
-  getAllStudentsProgress: async () => {
-    const response = await api.get('/api/modules/students/progress');
-    return response.data;
-  }
-};
-
-// Drills & Attendance API
 export const drillsAPI = {
-  getAllDrills: async () => {
+  getAll: async () => {
     const response = await api.get('/api/drills');
     return response.data;
   },
-
-  getStudentAttendance: async (studentId) => {
-    const response = await api.get(`/api/attendance?studentId=${studentId}`);
+  getById: async (id) => {
+    const response = await api.get(`/api/drills/${id}`);
     return response.data;
   },
-
-  getAllStudentsAttendance: async () => {
-    const response = await api.get('/api/attendance/students');
+  getStats: async () => {
+    const response = await api.get('/api/drills/stats');
     return response.data;
   },
-
-  getAttendanceStats: async () => {
-    const response = await api.get('/api/attendance/stats');
-    return response.data;
-  }
-};
-
-// Analytics API
-export const analyticsAPI = {
-  getDashboardMetrics: async (timeRange = '7d') => {
-    const response = await api.get(`/api/analytics/dashboard?range=${timeRange}`);
+  create: async (data) => {
+    const response = await api.post('/api/drills', data);
     return response.data;
   },
-
-  getUserMetrics: async (timeRange = '7d') => {
-    const response = await api.get(`/api/analytics/users?range=${timeRange}`);
+  start: async (id) => {
+    const response = await api.post(`/api/drills/start/${id}`);
     return response.data;
   },
-
-  getSecurityMetrics: async (timeRange = '7d') => {
-    const response = await api.get(`/api/analytics/security?range=${timeRange}`);
+  end: async (id) => {
+    const response = await api.post(`/api/drills/end/${id}`);
     return response.data;
   },
-
-  exportData: async (type, filters = {}) => {
-    const response = await api.post('/api/analytics/export', { type, filters }, {
-      responseType: 'blob'
-    });
+  markAttendance: async (drillId, studentId, status) => {
+    const response = await api.post(`/api/drills/attendance/${drillId}`, { studentId, status });
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/api/drills/${id}`);
     return response.data;
   }
 };
 
-// Utility functions
-export const utils = {
-  handleAPIError: (error) => {
-    const message = error.response?.data?.message || 'An error occurred';
-    toast.error(message, {
-      position: "top-right",
-      autoClose: 5000,
-    });
-    console.error('API Error:', error);
+export const modulesAPI = {
+  getAll: async () => {
+    const response = await api.get('/api/modules');
+    return response.data;
   },
-
-  handleAPISuccess: (message) => {
-    toast.success(message, {
-      position: "top-right",
-      autoClose: 3000,
-    });
+  getById: async (id) => {
+    const response = await api.get(`/api/modules/${id}`);
+    return response.data;
   },
+  updateProgress: async (moduleId, data) => {
+    const response = await api.post(`/api/modules/progress/${moduleId}`, data);
+    return response.data;
+  }
+};
 
-  formatError: (error) => {
-    if (error.response?.data?.errors) {
-      return error.response.data.errors.map(err => err.message).join(', ');
-    }
-    return error.response?.data?.message || error.message || 'An error occurred';
+export const alertsAPI = {
+  getAll: async () => {
+    const response = await api.get('/api/alerts');
+    return response.data;
   },
+  getActive: async () => {
+    const response = await api.get('/api/alerts/active');
+    return response.data;
+  },
+  create: async (data) => {
+    const response = await api.post('/api/alerts', data);
+    return response.data;
+  },
+  acknowledge: async (id, userId, userName) => {
+    const response = await api.post(`/api/alerts/acknowledge/${id}`, { userId, userName });
+    return response.data;
+  },
+  deactivate: async (id) => {
+    const response = await api.put(`/api/alerts/deactivate/${id}`);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/api/alerts/${id}`);
+    return response.data;
+  }
+};
 
-  isNetworkError: (error) => {
-    return !error.response && error.request;
+export const aiAPI = {
+  chat: async (message, conversationHistory = []) => {
+    const response = await api.post('/api/ai/chat', { message, conversationHistory });
+    return response.data;
+  },
+  generateQuiz: async (topic, difficulty = 'medium', count = 5) => {
+    const response = await api.post('/api/ai/quiz', { topic, difficulty, count });
+    return response.data;
+  },
+  getSafetyTips: async (disasterType) => {
+    const response = await api.post('/api/ai/safety-tips', { disasterType });
+    return response.data;
+  },
+  generateDrillScenario: async (drillType, duration, participantCount) => {
+    const response = await api.post('/api/ai/drill-scenario', { drillType, duration, participantCount });
+    return response.data;
+  },
+  analyzePreparedness: async (data) => {
+    const response = await api.post('/api/ai/analyze-preparedness', data);
+    return response.data;
+  },
+  getEmergencyGuide: async (emergencyType, location = 'school') => {
+    const response = await api.post('/api/ai/emergency-guide', { emergencyType, location });
+    return response.data;
   }
 };
 

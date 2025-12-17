@@ -4,25 +4,23 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Context and Authentication
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CustomThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Register from './components/Register';
 
-// Role-specific Dashboard Components
 import AdminDashboard from './components/AdminDashboard';
 import StaffDashboard from './components/StaffDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProfileCompletionDialog from './components/Common/ProfileCompletionDialog';
+import AIChatbot from './components/Common/AIChatbot';
 
-// Dashboard Router Component with Role-based Access
 const DashboardRouter = () => {
   const { currentUser, loading } = useAuth();
   const [showProfileCompletion, setShowProfileCompletion] = React.useState(false);
+  const [chatOpen, setChatOpen] = React.useState(false);
 
-  // Check if Google user needs to complete profile
   React.useEffect(() => {
     if (currentUser && currentUser.provider === 'google.com' && !currentUser.profileCompleted) {
       setShowProfileCompletion(true);
@@ -67,18 +65,16 @@ const DashboardRouter = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // Render dashboard content
   const renderDashboard = () => {
-    // Route to appropriate dashboard based on user role
     switch (currentUser.role) {
       case 'admin':
         return (
           <motion.div
             key="admin-dashboard"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.98 }}
+            transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
           >
             <AdminDashboard />
           </motion.div>
@@ -87,10 +83,10 @@ const DashboardRouter = () => {
         return (
           <motion.div
             key="staff-dashboard"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.98 }}
+            transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
           >
             <StaffDashboard />
           </motion.div>
@@ -99,10 +95,10 @@ const DashboardRouter = () => {
         return (
           <motion.div
             key="student-dashboard"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.98 }}
+            transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
           >
             <StudentDashboard />
           </motion.div>
@@ -116,16 +112,20 @@ const DashboardRouter = () => {
     <>
       {renderDashboard()}
       
-      {/* Profile Completion Dialog for Google Users */}
       <ProfileCompletionDialog
         open={showProfileCompletion}
         user={currentUser}
         onComplete={() => {
           setShowProfileCompletion(false);
-          // Optionally refresh user data
           window.location.reload();
         }}
         onSkip={() => setShowProfileCompletion(false)}
+      />
+
+      <AIChatbot
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
+        onToggle={() => setChatOpen(!chatOpen)}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IconButton,
   Badge,
@@ -12,7 +12,8 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText
+  ListItemText,
+  CircularProgress
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -23,6 +24,7 @@ import {
   MarkEmailRead as MarkReadIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
+import { alertsAPI } from '../../services/api';
 
 const getNotificationIcon = (type) => {
   switch (type) {
@@ -51,13 +53,55 @@ const getNotificationColor = (type) => {
 };
 
 const NotificationCenter = ({ 
-  notifications = [], 
-  onMarkAsRead, 
+  notifications: propNotifications = [], 
+  onMarkAsRead: propOnMarkAsRead, 
   onNotificationClick,
   role = 'student' 
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const [loading, setLoading] = useState(false);
+  const [alerts, setAlerts] = useState([]);
+  
+  // Fetch real alerts when component mounts
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        setLoading(true);
+        const response = await alertsAPI.getActive();
+        // API returns { success: true, data: [...] }
+        const activeAlerts = response?.data || response || [];
+        const alertsArray = Array.isArray(activeAlerts) ? activeAlerts : [];
+        
+        const formattedAlerts = alertsArray.map(alert => ({
+          id: alert.id,
+          title: alert.title,
+          message: alert.message,
+          type: alert.severity || 'info',
+          timestamp: alert.createdAt,
+          read: false,
+          isAlert: true
+        }));
+        setAlerts(formattedAlerts);
+      } catch (error) {
+        console.error('Failed to fetch alerts:', error);
+        setAlerts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAlerts();
+    
+    const interval = setInterval(fetchAlerts, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Merge prop notifications with fetched alerts
+  const allNotifications = [...alerts, ...propNotifications].sort((a, b) => 
+    new Date(b.timestamp) - new Date(a.timestamp)
+  );
+
+  const unreadCount = allNotifications.filter(n => !n.read).length;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,12 +115,31 @@ const NotificationCenter = ({
     if (onNotificationClick) {
       onNotificationClick(notification);
     }
-    if (onMarkAsRead && !notification.read) {
-      onMarkAsRead(notification.id);
+    
+    // If it's a local alert, mark as read locally
+    if (notification.isAlert) {
+      setAlerts(prev => prev.map(a => 
+        a.id === notification.id ? { ...a, read: true } : a
+      ));
+    } else if (propOnMarkAsRead && !notification.read) {
+      propOnMarkAsRead(notification.id);
     }
   };
 
+  const markAllRead = () => {
+    // Mark local alerts read
+    setAlerts(prev => prev.map(a => ({ ...a, read: true })));
+    
+    // Trigger prop mark read
+    propNotifications.forEach(n => {
+      if (!n.read && propOnMarkAsRead) {
+        propOnMarkAsRead(n.id);
+      }
+    });
+  };
+
   const formatTime = (timestamp) => {
+    if (!timestamp) return 'Recently';
     const now = new Date();
     const time = new Date(timestamp);
     const diff = now - time;
@@ -125,102 +188,101 @@ const NotificationCenter = ({
         </Box>
 
         <List sx={{ maxHeight: 400, overflow: 'auto', p: 0 }}>
-          <AnimatePresence>
-            {notifications.length === 0 ? (
-              <ListItem>
-                <ListItemText 
-                  primary="No notifications" 
-                  secondary="You're all caught up!" 
-                  sx={{ textAlign: 'center' }}
-                />
-              </ListItem>
-            ) : (
-              notifications.map((notification) => (
-                <motion.div
-                  key={notification.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ListItem 
-                    button
-                    onClick={() => handleNotificationClick(notification)}
-                    sx={{
-                      bgcolor: notification.read ? 'transparent' : 'action.hover',
-                      '&:hover': {
-                        bgcolor: 'action.selected'
-                      }
-                    }}
+          {loading && alerts.length === 0 ? (
+            <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : (
+            <AnimatePresence>
+              {allNotifications.length === 0 ? (
+                <ListItem>
+                  <ListItemText 
+                    primary="No notifications" 
+                    secondary="You're all caught up!" 
+                    sx={{ textAlign: 'center' }}
+                  />
+                </ListItem>
+              ) : (
+                allNotifications.map((notification) => (
+                  <motion.div
+                    key={`${notification.isAlert ? 'alert' : 'notif'}-${notification.id}`}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <ListItemAvatar>
-                      <Avatar sx={{ 
-                        bgcolor: `${getNotificationColor(notification.type)}20`,
-                        color: getNotificationColor(notification.type)
-                      }}>
-                        {getNotificationIcon(notification.type)}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Typography 
-                          variant="subtitle2" 
-                          fontWeight={notification.read ? 'normal' : 'bold'}
-                        >
-                          {notification.title}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box>
-                          <Typography 
-                            variant="body2" 
-                            color="text.secondary"
-                            sx={{ 
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            {notification.description || notification.message}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {formatTime(notification.timestamp)}
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                    {!notification.read && (
-                      <Box
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          bgcolor: 'primary.main',
-                          ml: 1
+                    <ListItem 
+                      button
+                      onClick={() => handleNotificationClick(notification)}
+                      sx={{
+                        bgcolor: notification.read ? 'transparent' : 'action.hover',
+                        '&:hover': {
+                          bgcolor: 'action.selected'
+                        }
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar sx={{ 
+                          bgcolor: `${getNotificationColor(notification.type)}20`,
+                          color: getNotificationColor(notification.type)
+                        }}>
+                          {getNotificationIcon(notification.type)}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={notification.title}
+                        primaryTypographyProps={{
+                          variant: 'subtitle2',
+                          fontWeight: notification.read ? 'normal' : 'bold'
                         }}
+                        secondary={
+                          <>
+                            <Typography 
+                              variant="body2" 
+                              color="text.secondary"
+                              component="span"
+                              sx={{ 
+                                display: 'block',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {notification.description || notification.message}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" component="span">
+                              {formatTime(notification.timestamp)}
+                            </Typography>
+                          </>
+                        }
+                        secondaryTypographyProps={{ component: 'div' }}
                       />
-                    )}
-                  </ListItem>
-                  <Divider />
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
+                      {!notification.read && (
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            bgcolor: 'primary.main',
+                            ml: 1
+                          }}
+                        />
+                      )}
+                    </ListItem>
+                    <Divider />
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          )}
         </List>
 
-        {notifications.length > 0 && unreadCount > 0 && (
+        {allNotifications.length > 0 && unreadCount > 0 && (
           <>
             <Divider />
             <Box sx={{ p: 1 }}>
               <MenuItem 
-                onClick={() => {
-                  notifications.forEach(n => {
-                    if (!n.read && onMarkAsRead) {
-                      onMarkAsRead(n.id);
-                    }
-                  });
-                }}
+                onClick={markAllRead}
                 sx={{ justifyContent: 'center' }}
               >
                 <MarkReadIcon sx={{ mr: 1 }} />

@@ -1,44 +1,83 @@
 import React from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography, LinearProgress } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Warning as Emergency } from '@mui/icons-material';
 
-const LoadingScreen = ({ message = 'Loading...' }) => {
+const LoadingScreen = ({ message = 'Loading...', progress = null }) => {
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        alignItems: 'center',
+        height: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white'
       }}
     >
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        style={{ textAlign: 'center' }}
       >
-        <Emergency sx={{ fontSize: 60, mb: 2 }} />
+        <motion.div
+          animate={{ 
+            rotate: 360,
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+            scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+          }}
+          style={{
+            width: 80,
+            height: 80,
+            border: '4px solid rgba(255,255,255,0.3)',
+            borderTop: '4px solid white',
+            borderRadius: '50%',
+            margin: '0 auto 24px',
+          }}
+        />
+        
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            color: 'white', 
+            fontWeight: 'bold',
+            mb: 1
+          }}
+        >
+          JAGRUK
+        </Typography>
+        
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: 'rgba(255,255,255,0.8)',
+            mb: 3
+          }}
+        >
+          {message}
+        </Typography>
+
+        {progress !== null && (
+          <Box sx={{ width: 300, mx: 'auto' }}>
+            <LinearProgress 
+              variant="determinate" 
+              value={progress} 
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                bgcolor: 'rgba(255,255,255,0.2)',
+                '& .MuiLinearProgress-bar': {
+                  bgcolor: 'white',
+                  borderRadius: 3,
+                }
+              }}
+            />
+          </Box>
+        )}
       </motion.div>
-      
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        JAGRUK
-      </Typography>
-      
-      <Typography variant="subtitle1" gutterBottom sx={{ opacity: 0.8 }}>
-        Disaster Management Education System
-      </Typography>
-      
-      <Box sx={{ mt: 3 }}>
-        <CircularProgress color="inherit" size={40} />
-      </Box>
-      
-      <Typography variant="body2" sx={{ mt: 2, opacity: 0.7 }}>
-        {message}
-      </Typography>
     </Box>
   );
 };
