@@ -8,34 +8,34 @@ Unlike traditional static safety protocols, JAGRUK provides a dynamic, interacti
 
 ---
 
-## 🚀 Key Standout Features
+## Key Standout Features
 
-### 🧠 JAGRUK AI Assistant (Gemini 2.0 Flash)
+### JAGRUK AI Assistant (Gemini 2.0 Flash)
 An intelligent, always-on crisis companion.
 *   **Context-Aware Guidance:** Instantly answers queries about earthquake protocols, fire safety, and first aid with markdown-formatted, easy-to-read instructions.
 *   **Scenario Generation:** Auto-creates detailed, realistic drill scenarios for safety officers.
 *   **Safety Tip Generator:** Provides location-specific and disaster-specific safety checklists.
 *   **Interactive Quizzes:** Generates custom disaster management quizzes to test student awareness.
 
-### 🏛️ Role-Based Ecosystem
+### Role-Based Ecosystem
 A unified platform serving distinct needs:
 *   **Admin Command Center:** Real-time dashboard for drill scheduling, resource tracking, and high-level analytics.
 *   **Staff Interface:** Tools for attendance management during drills, emergency reporting, and module completion tracking.
 *   **Student Learning Hub:** Gamified learning modules, interactive drills, and AI-powered safety education.
 
-### ⚡ Real-Time Architecture
+### Real-Time Architecture
 *   **Live Alerts:** Instant notification system for emergency broadcasts and system updates.
 *   **Dynamic Dashboards:** Fluid, animated interfaces that adapt to the user's role and system state.
 *   **Offline-Ready:** Critical safety guides cached for access during network disruptions.
 
-### 🎨 Premium User Experience
+### Premium User Experience
 *   **Glassmorphism Design:** Modern, visually stunning UI with fluid gradient animations and smooth page transitions.
 *   **Adaptive Theming:** Seamless Dark and Light mode support for comfortable usage in any environment.
 *   **Interactive Visuals:** Spring-physics animations and micro-interactions powered by Framer Motion.
 
 ---
 
-## 🛠️ Technical Architecture
+## Technical Architecture
 
 Built on a robust, scalable MERN stack with serverless capabilities:
 
@@ -48,7 +48,7 @@ Built on a robust, scalable MERN stack with serverless capabilities:
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 JAGRUK-WEB/
@@ -69,7 +69,7 @@ JAGRUK-WEB/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to deploy JAGRUK locally or to production.
 
@@ -140,7 +140,7 @@ The project is configured for seamless deployment on Vercel.
 
 ---
 
-## 🛡️ Security
+## Security
 
 *   **RBAC:** Strict middleware ensures users only access data relevant to their role.
 *   **Data Protection:** All sensitive data is encrypted via Firebase rules.
