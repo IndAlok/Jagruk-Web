@@ -113,6 +113,83 @@ async function handleAuth(req, res, action) {
       return res.json({ success: true, token, user: { id: userId, ...safeUser } });
     }
     
+    case 'google-login': {
+      const { idToken, role = 'student' } = body;
+      
+      try {
+        const decodedToken = await auth.verifyIdToken(idToken);
+        const { uid, email, name, picture } = decodedToken;
+        
+        let userData = null;
+        let existingRole = null;
+        let userRef = null;
+        
+        for (const collection of ['admins', 'staff', 'students']) {
+          const doc = await db.collection(collection).doc(uid).get();
+          if (doc.exists) {
+            userData = doc.data();
+            existingRole = userData.role;
+            userRef = doc.ref;
+            break;
+          }
+        }
+        
+        if (!userData) {
+          const newUserData = {
+            uid,
+            name: name || email.split('@')[0],
+            email,
+            phone: '',
+            address: '',
+            role,
+            status: 'active',
+            profilePhoto: picture || null,
+            provider: 'google',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          };
+
+          if (role === 'student') {
+            newUserData.class = '';
+            newUserData.section = '';
+            newUserData.admissionNumber = `STU-${Date.now()}`;
+            newUserData.moduleProgress = {};
+            newUserData.drillsAttended = 0;
+            newUserData.totalPoints = 0;
+          } else if (role === 'staff') {
+            newUserData.staffId = `STF-${Date.now()}`;
+            newUserData.assignedClasses = [];
+          } else if (role === 'admin') {
+            newUserData.adminId = `ADM-${Date.now()}`;
+          }
+
+          const collection = role === 'student' ? 'students' : role === 'staff' ? 'staff' : 'admins';
+          await db.collection(collection).doc(uid).set(newUserData);
+          
+          userData = newUserData;
+          existingRole = role;
+        } else {
+          await userRef.update({
+            lastLogin: new Date().toISOString(),
+            profilePhoto: picture || userData.profilePhoto
+          });
+        }
+        
+        const token = generateToken({ id: uid, email: userData.email, role: existingRole, name: userData.name });
+        
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          token,
+          user: { id: uid, ...userData, role: existingRole }
+        });
+      } catch (error) {
+        console.error('Google login error:', error);
+        return res.status(500).json({ success: false, message: 'Google login failed' });
+      }
+    }
+
     case 'verify': {
       const token = req.headers.authorization?.replace('Bearer ', '') || body.token;
       const decoded = verifyToken(token);
