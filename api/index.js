@@ -394,9 +394,10 @@ async function handleAlerts(req, res, action, id) {
   const method = req.method;
   
   if (method === 'GET' && action === 'active') {
-    const snapshot = await db.collection('alerts').where('isActive', '==', true).orderBy('createdAt', 'desc').limit(10).get();
+    const snapshot = await db.collection('alerts').where('isActive', '==', true).limit(20).get();
     const alerts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    return res.json({ success: true, data: alerts });
+    alerts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return res.json({ success: true, data: alerts.slice(0, 10) });
   }
   
   if (method === 'GET' && !id) {
