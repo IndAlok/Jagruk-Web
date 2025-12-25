@@ -190,6 +190,7 @@ async function handleAuth(req, res, action) {
       }
     }
 
+    case 'verify-token':
     case 'verify': {
       const token = req.headers.authorization?.replace('Bearer ', '') || body.token;
       const decoded = verifyToken(token);
