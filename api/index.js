@@ -503,8 +503,17 @@ async function handleAI(req, res, action) {
     const { message, conversationHistory = [] } = req.body || {};
     if (!message) return res.status(400).json({ success: false, message: 'Message required' });
     
+    let history = conversationHistory.map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.content }]
+    }));
+    
+    while (history.length > 0 && history[0].role !== 'user') {
+      history.shift();
+    }
+    
     const chat = model.startChat({
-      history: conversationHistory.map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content }] })),
+      history,
       generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
     });
     
