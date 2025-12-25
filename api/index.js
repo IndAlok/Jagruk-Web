@@ -497,7 +497,7 @@ async function handleDashboard(req, res, action) {
 }
 
 async function handleAI(req, res, action) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-3.0-flash' });
   
   if (action === 'chat') {
     const { message, conversationHistory = [] } = req.body || {};
